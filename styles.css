@@ -568,7 +568,31 @@ tr:last-child td { border-bottom: none; }
 
 @media print {
   .site-header, .site-footer, .toc, .page-nav, .nav-toggle { display: none; }
-  body { background: #fff; color: #000; }
+  body { background: #fff; color: #000; font-size: 11pt; }
   .page { padding: 0; }
+  main > * { max-width: none; }
   a { color: inherit; text-decoration: none; }
+  /* Show the destination of real links, but not for in-page jumps */
+  main a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  /* Keep the callout colours: the warning-signs page tells families to
+     print the emergency card and hand it to clinicians. */
+  .callout {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .callout--emergency {
+    border: 2pt solid #a02c2c;
+    background: #fdeeee;
+  }
+  h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  tr, li { break-inside: avoid; page-break-inside: avoid; }
+  table, .age-band { break-inside: auto; }
+  .sources { font-size: 9pt; }
 }
