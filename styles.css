@@ -223,18 +223,49 @@ main > .grid, main > .full, main > table, main > .table-wrap { max-width: none; 
 .toc li { margin: 0.35rem 0; }
 .toc a { color: var(--text-soft); text-decoration: none; }
 .toc a:hover { color: var(--primary-strong); text-decoration: underline; }
+/* The list is built by site.js, so an empty shell would just be noise
+   without scripting. */
+.toc { display: none; }
+body.js .toc { display: block; }
+body.js .toc[hidden] { display: none; }
+
 @media (max-width: 61.99rem) {
   .toc {
     position: static;
     max-height: none;
     border: 1px solid var(--border);
+    border-left-width: 3px;
+    border-color: var(--border);
+    border-left-color: var(--primary);
     border-radius: var(--radius);
     background: var(--bg-card);
-    padding: 1rem 1.25rem;
-    margin: 0 0 1.5rem;
+    padding: 0.75rem 1rem;
+    margin: 0 0 1.75rem;
     max-width: var(--prose);
   }
-  .page--with-toc { display: flex; flex-direction: column-reverse; }
+  /* site.js moves the menu below the intro; without it the menu simply
+     follows the article instead of preceding the title. */
+  .page--with-toc { display: flex; flex-direction: column; }
+  .toc--collapsible > h2 { display: none; }
+  .toc__toggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.25rem 0;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-strong);
+    cursor: pointer;
+  }
+  .toc__toggle::after {
+    content: " ▾";
+    font-size: 0.8em;
+  }
+  .toc__toggle[aria-expanded="true"]::after { content: " ▴"; }
+  .toc--collapsible ul { margin-top: 0.6rem; }
 }
 
 /* ---- Typography ---------------------------------------------------------- */

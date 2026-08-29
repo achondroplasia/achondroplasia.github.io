@@ -38,24 +38,27 @@
     }
   });
 
-  /* Build the "On this page" list from h2 headings */
-  var tocList = document.querySelector(".toc ul");
+  /* Build the "On this page" list from h2 headings.
+     Ids are normally baked into the HTML so #fragment links work on load;
+     this fills in any that are missing. */
+  var toc = document.querySelector(".toc");
+  var tocList = toc && toc.querySelector("ul");
   var main = document.querySelector("main");
+  var count = 0;
   if (tocList && main) {
-    var headings = main.querySelectorAll("h2:not(.sources h2)");
     var used = {};
-    headings.forEach(function (h) {
+    main.querySelectorAll("h2").forEach(function (h) {
       if (h.closest(".sources")) return;
       if (!h.id) {
-        var slug = h.textContent
-          .toLowerCase()
-          .replace(/[^a-z0-9\s-]/g, "")
-          .trim()
-          .replace(/\s+/g, "-")
-          .slice(0, 60);
-        var base = slug || "section";
+        var base =
+          h.textContent
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .trim()
+            .replace(/\s+/g, "-")
+            .slice(0, 60) || "section";
+        var slug = base;
         var n = 1;
-        slug = base;
         while (used[slug] || document.getElementById(slug)) {
           n += 1;
           slug = base + "-" + n;
@@ -69,10 +72,62 @@
       link.textContent = h.textContent;
       li.appendChild(link);
       tocList.appendChild(li);
+      count += 1;
     });
-    if (!headings.length) {
-      var toc = document.querySelector(".toc");
-      if (toc) toc.hidden = true;
-    }
+  }
+
+  /* On narrow screens the sidebar would otherwise sit above the page title.
+     Move it below the intro instead, and collapse it so it stays out of the
+     way of the reading. */
+  if (toc && count) {
+    var anchorEl = main.querySelector(".lede") || main.querySelector("h1");
+    var home = document.createComment("toc");
+    toc.parentNode.insertBefore(home, toc);
+
+    var summary = document.createElement("button");
+    summary.className = "toc__toggle";
+    summary.type = "button";
+    summary.setAttribute("aria-expanded", "false");
+    summary.setAttribute("aria-controls", "toc-list");
+    summary.textContent = "On this page (" + count + " sections)";
+    tocList.id = "toc-list";
+    summary.addEventListener("click", function () {
+      var open = summary.getAttribute("aria-expanded") === "true";
+      summary.setAttribute("aria-expanded", String(!open));
+      tocList.hidden = open;
+    });
+
+    var narrow = window.matchMedia("(max-width: 61.99rem)");
+    var placeToc = function () {
+      if (narrow.matches) {
+        if (anchorEl && anchorEl.nextSibling !== toc) {
+          anchorEl.parentNode.insertBefore(toc, anchorEl.nextSibling);
+        }
+        if (!summary.parentNode) toc.insertBefore(summary, tocList);
+        toc.classList.add("toc--collapsible");
+        tocList.hidden = summary.getAttribute("aria-expanded") !== "true";
+      } else {
+        if (home.parentNode && home.nextSibling !== toc) {
+          home.parentNode.insertBefore(toc, home);
+        }
+        if (summary.parentNode) summary.remove();
+        toc.classList.remove("toc--collapsible");
+        tocList.hidden = false;
+      }
+    };
+    placeToc();
+    narrow.addEventListener
+      ? narrow.addEventListener("change", placeToc)
+      : narrow.addListener(placeToc);
+
+    /* Collapse again after jumping to a section */
+    tocList.addEventListener("click", function (e) {
+      if (e.target.tagName === "A" && narrow.matches) {
+        summary.setAttribute("aria-expanded", "false");
+        tocList.hidden = true;
+      }
+    });
+  } else if (toc) {
+    toc.hidden = true;
   }
 })();
