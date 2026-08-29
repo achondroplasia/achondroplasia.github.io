@@ -3,7 +3,7 @@
 A free, comprehensive family guide to achondroplasia — from birth through adulthood.
 Built as a plain static site (no build step) and hosted on GitHub Pages:
 
-**https://shubhamtatvamasi.github.io/achondroplasia/**
+**https://shubhamtatvamasi.com/achondroplasia/**
 
 ## What's here
 
