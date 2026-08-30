@@ -4,11 +4,36 @@
 
   document.body.classList.add("js");
 
-  /* The header is pinned (position: sticky). Publish its real height as
-     --header-h so anchor jumps and the sidebar TOC clear it exactly. */
+  /* Nav lives behind the Menu button at every width, opening as a panel
+     under the pinned bar. Closes on Escape or a click outside the header. */
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.querySelector(".site-nav");
+  if (toggle && nav) {
+    nav.hidden = true;
+    var setOpen = function (open) {
+      nav.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+    };
+    toggle.addEventListener("click", function () {
+      setOpen(nav.hidden);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !nav.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    document.addEventListener("click", function (e) {
+      if (!nav.hidden && !e.target.closest(".site-header")) setOpen(false);
+    });
+  }
+
+  /* The header is pinned (position: sticky). Publish its real closed height
+     as --header-h so anchor jumps and the sidebar TOC clear it exactly. */
   var header = document.querySelector(".site-header");
   if (header) {
     var setHeaderHeight = function () {
+      if (nav && !nav.hidden) return; // the open menu must not inflate offsets
       document.documentElement.style.setProperty(
         "--header-h",
         header.offsetHeight + "px"
@@ -20,28 +45,6 @@
     } else {
       window.addEventListener("resize", setHeaderHeight);
     }
-  }
-
-  /* Mobile nav toggle */
-  var toggle = document.querySelector(".nav-toggle");
-  var nav = document.querySelector(".site-nav");
-  if (toggle && nav) {
-    var mq = window.matchMedia("(max-width: 47rem)");
-    var sync = function () {
-      if (mq.matches) {
-        nav.hidden = true;
-        toggle.setAttribute("aria-expanded", "false");
-      } else {
-        nav.hidden = false;
-      }
-    };
-    sync();
-    mq.addEventListener ? mq.addEventListener("change", sync) : mq.addListener(sync);
-    toggle.addEventListener("click", function () {
-      var open = nav.hidden;
-      nav.hidden = !open;
-      toggle.setAttribute("aria-expanded", String(open));
-    });
   }
 
   /* Mark the current page in the nav (handles both "page" and "page.html") */

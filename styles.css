@@ -95,10 +95,11 @@ body {
 .skip-link:focus { left: 0; }
 
 /* ---- Header & navigation ------------------------------------------------ */
-/* The header stays pinned so the nav is always reachable. --header-h is a
-   no-JS fallback; site.js measures the real height and keeps it in sync. */
-:root { --header-h: 9.5rem; }
-@media (max-width: 47rem) { :root { --header-h: 4.25rem; } }
+/* The header stays pinned as a slim bar; at every width the nav lives
+   behind the Menu button so the bar takes minimal space. site.js measures
+   the real (closed) height into --header-h; without JS the header is
+   static, so the 0 fallback keeps anchor offsets small. */
+:root { --header-h: 0px; }
 
 .site-header {
   position: sticky;
@@ -108,10 +109,14 @@ body {
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
+/* Without JS the menu can't collapse, so a pinned full-height header would
+   swallow the screen — fall back to a normal scrolling header. */
+body:not(.js) .site-header { position: static; }
+
 .site-header__inner {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 1rem 1.25rem 0.5rem;
+  padding: 0.65rem 1.25rem;
 }
 .site-header__top {
   display: flex;
@@ -139,7 +144,7 @@ body {
 }
 
 .nav-toggle {
-  display: none;
+  display: none; /* shown by body.js below; without JS the nav is always open */
   margin-left: auto;
   background: var(--bg-inset);
   border: 1px solid var(--border);
@@ -151,21 +156,33 @@ body {
   cursor: pointer;
 }
 
+body.js .nav-toggle { display: block; }
+body.js .site-nav[hidden] { display: none; }
+
+/* The open menu is a panel under the bar: one column on phones, multiple
+   columns on wider screens (auto-fill). */
 .site-nav ul {
   list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin: 0.6rem 0 0;
-  padding: 0 0 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.15rem 1.25rem;
+  margin: 0.65rem 0 0;
+  padding: 0.65rem 0 0.35rem;
+  border-top: 1px solid var(--border);
+}
+/* The open menu may be taller than the screen: scroll inside it. */
+body.js .site-nav ul {
+  max-height: calc(100vh - 5rem);
+  max-height: calc(100dvh - 5rem);
+  overflow-y: auto;
 }
 .site-nav a {
-  display: inline-block;
+  display: block;
   padding: 0.35rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 8px;
   text-decoration: none;
   color: var(--text-soft);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 500;
   border: 1px solid transparent;
 }
@@ -179,28 +196,9 @@ body {
   border-color: var(--primary);
   font-weight: 600;
 }
-.site-nav .nav-sep {
-  align-self: center;
-  color: var(--border);
-  padding: 0 0.2rem;
-  user-select: none;
-}
+.site-nav .nav-sep { display: none; }
 
 @media (max-width: 47rem) {
-  body.js .nav-toggle { display: block; }
-  body.js .site-nav[hidden] { display: none; }
-  /* Without JS the nav can't collapse, so a pinned header would fill the
-     whole screen — fall back to a normal scrolling header. */
-  body:not(.js) .site-header { position: static; }
-  /* The open menu may be taller than the phone screen: scroll inside it. */
-  body.js .site-nav ul {
-    max-height: calc(100vh - 6rem);
-    max-height: calc(100dvh - 6rem);
-    overflow-y: auto;
-  }
-  .site-nav ul { flex-direction: column; gap: 0.1rem; }
-  .site-nav a { display: block; border-radius: 8px; }
-  .site-nav .nav-sep { display: none; }
   .site-title__tag { display: none; }
 }
 
