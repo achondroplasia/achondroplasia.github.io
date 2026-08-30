@@ -60,7 +60,11 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Keep anchor targets visible below the sticky header */
+  scroll-padding-top: calc(var(--header-h) + 0.75rem);
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { animation: none !important; transition: none !important; }
@@ -91,7 +95,15 @@ body {
 .skip-link:focus { left: 0; }
 
 /* ---- Header & navigation ------------------------------------------------ */
+/* The header stays pinned so the nav is always reachable. --header-h is a
+   no-JS fallback; site.js measures the real height and keeps it in sync. */
+:root { --header-h: 9.5rem; }
+@media (max-width: 47rem) { :root { --header-h: 4.25rem; } }
+
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow);
@@ -177,6 +189,15 @@ body {
 @media (max-width: 47rem) {
   body.js .nav-toggle { display: block; }
   body.js .site-nav[hidden] { display: none; }
+  /* Without JS the nav can't collapse, so a pinned header would fill the
+     whole screen — fall back to a normal scrolling header. */
+  body:not(.js) .site-header { position: static; }
+  /* The open menu may be taller than the phone screen: scroll inside it. */
+  body.js .site-nav ul {
+    max-height: calc(100vh - 6rem);
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
+  }
   .site-nav ul { flex-direction: column; gap: 0.1rem; }
   .site-nav a { display: block; border-radius: 8px; }
   .site-nav .nav-sep { display: none; }
@@ -207,9 +228,9 @@ main > .grid, main > .full, main > table, main > .table-wrap { max-width: none; 
   border-left: 2px solid var(--border);
   padding-left: 1rem;
   position: sticky;
-  top: 1.25rem;
+  top: calc(var(--header-h) + 1.25rem);
   align-self: start;
-  max-height: calc(100vh - 3rem);
+  max-height: calc(100vh - var(--header-h) - 3rem);
   overflow-y: auto;
 }
 .toc h2 {

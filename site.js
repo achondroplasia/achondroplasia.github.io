@@ -4,6 +4,24 @@
 
   document.body.classList.add("js");
 
+  /* The header is pinned (position: sticky). Publish its real height as
+     --header-h so anchor jumps and the sidebar TOC clear it exactly. */
+  var header = document.querySelector(".site-header");
+  if (header) {
+    var setHeaderHeight = function () {
+      document.documentElement.style.setProperty(
+        "--header-h",
+        header.offsetHeight + "px"
+      );
+    };
+    setHeaderHeight();
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(setHeaderHeight).observe(header);
+    } else {
+      window.addEventListener("resize", setHeaderHeight);
+    }
+  }
+
   /* Mobile nav toggle */
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.querySelector(".site-nav");
