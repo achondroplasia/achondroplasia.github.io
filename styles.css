@@ -95,9 +95,11 @@ body {
 .skip-link:focus { left: 0; }
 
 /* ---- Header & navigation ------------------------------------------------ */
-/* The header stays pinned as a slim bar; at every width the nav lives
-   behind the Menu button so the bar takes minimal space. site.js measures
-   the real (closed) height into --header-h; without JS the header is
+/* The slim bar stays pinned. The nav sits BELOW it in normal page flow:
+   fully visible at the top of the page, it simply scrolls away, and site.js
+   then reveals the Menu button, which reopens the nav as a fixed panel
+   under the bar (phones skip the docked stage — always behind Menu).
+   site.js measures the bar height into --header-h; without JS the header is
    static, so the 0 fallback keeps anchor offsets small. */
 :root { --header-h: 0px; }
 
@@ -157,23 +159,35 @@ body:not(.js) .site-header { position: static; }
 }
 
 body.js .nav-toggle { display: block; }
+body.js .nav-toggle[hidden] { display: none; } /* hidden while the nav is docked in view */
 body.js .site-nav[hidden] { display: none; }
 
-/* The open menu is a panel under the bar: one column on phones, multiple
-   columns on wider screens (auto-fill). */
+/* Docked: a card strip below the bar. One column on phones, multi-column
+   on wider screens (auto-fill). */
+.site-nav {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+}
 .site-nav ul {
   list-style: none;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: 0.15rem 1.25rem;
-  margin: 0.65rem 0 0;
-  padding: 0.65rem 0 0.35rem;
-  border-top: 1px solid var(--border);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem 0.75rem;
 }
-/* The open menu may be taller than the screen: scroll inside it. */
-body.js .site-nav ul {
-  max-height: calc(100vh - 5rem);
-  max-height: calc(100dvh - 5rem);
+/* Opened from the Menu button: a fixed panel under the pinned bar, scrolling
+   inside itself if taller than the screen. */
+body.js .site-nav--overlay {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  z-index: 49;
+  box-shadow: var(--shadow);
+  max-height: calc(100vh - var(--header-h));
+  max-height: calc(100dvh - var(--header-h));
   overflow-y: auto;
 }
 .site-nav a {
@@ -586,7 +600,7 @@ tr:last-child td { border-bottom: none; }
 .updated { font-size: 0.85rem; color: var(--text-soft); margin-top: 0.25rem; }
 
 @media print {
-  .site-header, .site-footer, .toc, .page-nav, .nav-toggle { display: none; }
+  .site-header, .site-nav, .site-footer, .toc, .page-nav { display: none; }
   body { background: #fff; color: #000; font-size: 11pt; }
   .page { padding: 0; }
   main > * { max-width: none; }

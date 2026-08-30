@@ -4,36 +4,11 @@
 
   document.body.classList.add("js");
 
-  /* Nav lives behind the Menu button at every width, opening as a panel
-     under the pinned bar. Closes on Escape or a click outside the header. */
-  var toggle = document.querySelector(".nav-toggle");
-  var nav = document.querySelector(".site-nav");
-  if (toggle && nav) {
-    nav.hidden = true;
-    var setOpen = function (open) {
-      nav.hidden = !open;
-      toggle.setAttribute("aria-expanded", String(open));
-    };
-    toggle.addEventListener("click", function () {
-      setOpen(nav.hidden);
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !nav.hidden) {
-        setOpen(false);
-        toggle.focus();
-      }
-    });
-    document.addEventListener("click", function (e) {
-      if (!nav.hidden && !e.target.closest(".site-header")) setOpen(false);
-    });
-  }
-
-  /* The header is pinned (position: sticky). Publish its real closed height
-     as --header-h so anchor jumps and the sidebar TOC clear it exactly. */
+  /* The bar is pinned (position: sticky). Publish its measured height as
+     --header-h so anchor jumps, the sidebar TOC, and the menu panel clear it. */
   var header = document.querySelector(".site-header");
   if (header) {
     var setHeaderHeight = function () {
-      if (nav && !nav.hidden) return; // the open menu must not inflate offsets
       document.documentElement.style.setProperty(
         "--header-h",
         header.offsetHeight + "px"
@@ -45,6 +20,112 @@
     } else {
       window.addEventListener("resize", setHeaderHeight);
     }
+  }
+
+  /* Site nav. On wide screens it starts "docked": in normal flow below the
+     bar, fully visible, scrolling away with the page. Once it has scrolled
+     out of view it collapses behind the Menu button, which reopens it as a
+     fixed panel under the bar. Phones skip the docked stage. A spacer of
+     equal height stands in for the collapsed nav so the swap never shifts
+     the page. */
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.querySelector(".site-nav");
+  if (header && toggle && nav) {
+    var desktop = window.matchMedia("(min-width: 47.01rem)");
+    var spacer = document.createElement("div");
+    spacer.setAttribute("aria-hidden", "true");
+    var state; // "docked" | "collapsed" | "overlay"
+    var navH = 0;
+    var collapsePoint = 0;
+
+    var dock = function () {
+      nav.classList.remove("site-nav--overlay");
+      nav.hidden = false;
+      spacer.remove();
+      toggle.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+      state = "docked";
+      navH = nav.offsetHeight;
+      collapsePoint = nav.offsetTop + navH - header.offsetHeight;
+    };
+    var collapse = function () {
+      nav.classList.remove("site-nav--overlay");
+      nav.hidden = true;
+      if (desktop.matches) {
+        spacer.style.height = navH + "px";
+        if (!spacer.parentNode) nav.parentNode.insertBefore(spacer, nav);
+      } else {
+        spacer.remove();
+      }
+      toggle.hidden = false;
+      toggle.setAttribute("aria-expanded", "false");
+      state = "collapsed";
+    };
+    var openOverlay = function () {
+      nav.classList.add("site-nav--overlay");
+      nav.hidden = false;
+      toggle.setAttribute("aria-expanded", "true");
+      state = "overlay";
+    };
+
+    /* Scroll only moves us between docked and collapsed on wide screens;
+       an open panel is left alone. */
+    var sync = function () {
+      if (!desktop.matches) return;
+      if (state === "docked") {
+        if (window.scrollY >= collapsePoint) collapse();
+      } else if (state === "collapsed" && window.scrollY < collapsePoint) {
+        dock();
+      }
+    };
+    var onModeChange = function () {
+      if (desktop.matches) {
+        dock(); // measure in the docked state
+        sync();
+      } else {
+        collapse();
+      }
+    };
+    onModeChange();
+
+    var ticking = false;
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          ticking = false;
+          sync();
+        });
+      },
+      { passive: true }
+    );
+    desktop.addEventListener
+      ? desktop.addEventListener("change", onModeChange)
+      : desktop.addListener(onModeChange);
+    window.addEventListener("resize", function () {
+      if (state === "docked") dock(); // re-measure after reflow
+    });
+
+    toggle.addEventListener("click", function () {
+      state === "overlay" ? collapse() : openOverlay();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && state === "overlay") {
+        collapse();
+        toggle.focus();
+      }
+    });
+    document.addEventListener("click", function (e) {
+      if (
+        state === "overlay" &&
+        !e.target.closest(".site-header") &&
+        !e.target.closest(".site-nav")
+      ) {
+        collapse();
+      }
+    });
   }
 
   /* Mark the current page in the nav (handles both "page" and "page.html") */
