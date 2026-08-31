@@ -101,9 +101,7 @@
       },
       { passive: true }
     );
-    desktop.addEventListener
-      ? desktop.addEventListener("change", onModeChange)
-      : desktop.addListener(onModeChange);
+    desktop.addEventListener("change", onModeChange);
     window.addEventListener("resize", function () {
       if (state === "docked") dock(); // re-measure after reflow
     });
@@ -218,9 +216,7 @@
       }
     };
     placeToc();
-    narrow.addEventListener
-      ? narrow.addEventListener("change", placeToc)
-      : narrow.addListener(placeToc);
+    narrow.addEventListener("change", placeToc);
 
     /* Collapse again after jumping to a section */
     tocList.addEventListener("click", function (e) {
