@@ -171,7 +171,7 @@ body.js .site-nav[hidden] { display: none; }
 .site-nav ul {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
   gap: 0.15rem 1.25rem;
   max-width: var(--maxw);
   margin: 0 auto;
@@ -210,7 +210,20 @@ body.js .site-nav--overlay {
   border-color: var(--primary);
   font-weight: 600;
 }
-.site-nav .nav-sep { display: none; }
+.site-nav .nav-sep {
+  display: block;
+  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-soft);
+  padding: 0.6rem 0.7rem 0.1rem;
+  margin-top: 0.2rem;
+  border-top: 1px solid var(--border);
+  pointer-events: none;
+  user-select: none;
+}
 
 @media (max-width: 47rem) {
   .site-title__tag { display: none; }
@@ -564,8 +577,14 @@ tr:last-child td { border-bottom: none; }
 .site-footer__cols {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   margin-bottom: 1.5rem;
+}
+/* On wide screens, force exactly 4 columns so footer looks balanced */
+@media (min-width: 62rem) {
+  .site-footer__cols {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 .site-footer h2 {
   font-size: 0.8rem;
