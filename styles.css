@@ -175,8 +175,15 @@ body.js .site-nav--overlay {
   left: 0; right: 0;
   z-index: 49;
   box-shadow: var(--shadow);
-  max-height: calc(100dvh - var(--header-h));
-  overflow-y: auto;
+}
+/* Mobile stacks every link in one long vertical list, so the overlay itself
+   needs to scroll. Desktop keeps the horizontal bar with flyout dropdowns —
+   clipping here would cut those flyouts off, so only mobile scrolls. */
+@media (max-width: 47.99rem) {
+  body.js .site-nav--overlay {
+    max-height: calc(100dvh - var(--header-h));
+    overflow-y: auto;
+  }
 }
 body.js .site-nav[hidden] { display: none; }
 
