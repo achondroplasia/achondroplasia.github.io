@@ -657,6 +657,16 @@ tr:last-child td { border-bottom: none; }
   color: var(--primary-strong);
 }
 .page-nav a:hover { border-color: var(--primary); }
+/* Below ~46rem the two links wrap onto separate lines. Left-aligned boxes of
+   different widths then leave a ragged right edge, so span both full width
+   and right-align the "Next" link's text to keep a clean shared edge. */
+@media (max-width: 46rem) {
+  .page-nav a {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+  .page-nav a:last-child { text-align: right; }
+}
 
 .site-footer {
   background: var(--bg-card);
