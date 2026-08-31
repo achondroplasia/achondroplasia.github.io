@@ -251,7 +251,7 @@ body.js .site-nav[hidden] { display: none; }
   margin: 0;
   padding: 0.35rem 0;
   /* Always hidden by default — shown only by hover or aria */
-  display: none;
+  display: none !important;
   pointer-events: none;
 }
 /* HOVER on desktop — CSS only, no JS needed */
@@ -313,29 +313,6 @@ body.js .site-nav[hidden] { display: none; }
 
 /* Legacy: hide old nav-sep items */
 .site-nav .nav-sep { display: none; }
-.site-nav ul:not(.site-nav__list) {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem 1.25rem;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0.5rem 1.25rem 0.75rem;
-}
-.site-nav a:not(.dropdown-menu a):not(.site-nav__item > a) {
-  display: block;
-  padding: 0.35rem 0.7rem;
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--text-soft);
-  font-size: 0.95rem;
-  font-weight: 500;
-  border: 1px solid transparent;
-}
-.site-nav a:not(.dropdown-menu a):not(.site-nav__item > a):hover {
-  color: var(--primary-strong);
-  background: var(--primary-soft);
-}
 
 /* ---- Layout ------------------------------------------------------------- */
 .page {
