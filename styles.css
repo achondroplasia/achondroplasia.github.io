@@ -257,15 +257,15 @@ body.js .site-nav[hidden] { display: none; }
 /* HOVER on desktop — CSS only, no JS needed */
 @media (min-width: 48rem) {
   .has-dropdown:hover > .dropdown-menu {
-    display: block;
+    display: block !important;
     pointer-events: auto;
   }
   /* Keep open while cursor moves into dropdown */
-  .dropdown-menu:hover { display: block; pointer-events: auto; }
+  .dropdown-menu:hover { display: block !important; pointer-events: auto; }
 }
 /* CLICK toggle — for keyboard/accessibility (both desktop + mobile) */
 .dropdown-toggle[aria-expanded="true"] + .dropdown-menu {
-  display: block;
+  display: block !important;
   pointer-events: auto;
 }
 .dropdown-menu li a {
