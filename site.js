@@ -229,3 +229,57 @@
     toc.hidden = true;
   }
 })();
+
+
+/* ---- Dropdown navigation ---------------------------------------- */
+(function () {
+  "use strict";
+  var toggles = document.querySelectorAll('.dropdown-toggle');
+  if (!toggles.length) return;
+
+  /* Ensure all dropdowns start CLOSED */
+  toggles.forEach(function (t) { t.setAttribute('aria-expanded', 'false'); });
+
+  function closeAll(except) {
+    toggles.forEach(function (t) {
+      if (t !== except) t.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  /* Click: toggle open/close (works on both desktop and mobile) */
+  toggles.forEach(function (toggle) {
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      closeAll(toggle);
+      /* On mobile only: toggle. On desktop, hover handles it via CSS so
+         clicking just toggles as an alternative. */
+      toggle.setAttribute('aria-expanded', String(!open));
+    });
+  });
+
+  /* Close dropdowns when clicking anywhere else */
+  document.addEventListener('click', function () { closeAll(null); });
+
+  /* Close dropdowns when nav collapses */
+  var navToggle = document.querySelector('.nav-toggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', function () { closeAll(null); });
+  }
+
+  /* Escape closes all */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeAll(null); }
+  });
+
+  /* Mark current page link */
+  var slug = (location.pathname.split('/').filter(Boolean).pop() || '')
+    .replace(/\.html$/, '') || 'index';
+  document.querySelectorAll('.site-nav__list a').forEach(function (a) {
+    var h = (a.getAttribute('href') || '')
+      .replace(/\.html$/, '').replace(/^\.\//, '') || 'index';
+    if (h === slug) {
+      a.setAttribute('aria-current', 'page');
+    }
+  });
+})();

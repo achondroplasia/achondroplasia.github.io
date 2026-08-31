@@ -162,35 +162,167 @@ body.js .nav-toggle { display: block; }
 body.js .nav-toggle[hidden] { display: none; } /* hidden while the nav is docked in view */
 body.js .site-nav[hidden] { display: none; }
 
-/* Docked: a card strip below the bar. One column on phones, multi-column
-   on wider screens (auto-fill). */
+/* ---- Navigation: compact bar with dropdowns ─────────────────── */
 .site-nav {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 50;
 }
-.site-nav ul {
+body.js .site-nav--overlay {
+  position: fixed;
+  top: var(--header-h);
+  left: 0; right: 0;
+  z-index: 49;
+  box-shadow: var(--shadow);
+  max-height: calc(100dvh - var(--header-h));
+  overflow-y: auto;
+}
+body.js .site-nav[hidden] { display: none; }
+
+/* Top-level list */
+.site-nav__list {
   list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  margin: 0 auto;
+  padding: 0 0.5rem;
+  max-width: var(--maxw);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.site-nav__item { position: relative; }
+
+/* Links and buttons */
+.site-nav__item > a,
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  text-decoration: none;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  height: 100%;
+  transition: color 0.12s, background 0.12s;
+}
+.site-nav__item > a:hover,
+.dropdown-toggle:hover,
+.dropdown-toggle[aria-expanded="true"],
+.has-dropdown:hover > .dropdown-toggle {
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+}
+.site-nav__item > a[aria-current="page"] {
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+  font-weight: 600;
+}
+
+/* Arrow indicator */
+.dropdown-arrow {
+  font-size: 0.75em;
+  opacity: 0.8;
+  transition: transform 0.2s;
+  display: inline-block;
+  margin-left: 0.15rem;
+}
+.dropdown-toggle[aria-expanded="true"] .dropdown-arrow,
+.has-dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
+
+/* Dropdown panel */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  min-width: 14rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+  /* Always hidden by default — shown only by hover or aria */
+  display: none;
+  pointer-events: none;
+}
+/* HOVER on desktop — CSS only, no JS needed */
+@media (min-width: 48rem) {
+  .has-dropdown:hover > .dropdown-menu {
+    display: block;
+    pointer-events: auto;
+  }
+  /* Keep open while cursor moves into dropdown */
+  .dropdown-menu:hover { display: block; pointer-events: auto; }
+}
+/* CLICK toggle — for keyboard/accessibility (both desktop + mobile) */
+.dropdown-toggle[aria-expanded="true"] + .dropdown-menu {
+  display: block;
+  pointer-events: auto;
+}
+.dropdown-menu li a {
+  display: block;
+  padding: 0.42rem 1rem;
+  font-size: 0.88rem;
+  color: var(--text-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dropdown-menu li a:hover {
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+}
+.dropdown-menu li a[aria-current="page"] {
+  color: var(--primary-strong);
+  font-weight: 600;
+  background: var(--primary-soft);
+}
+
+/* Mobile – stacked */
+@media (max-width: 47rem) {
+  .site-title__tag { display: none; }
+  .site-nav__list { flex-direction: column; padding: 0.4rem 0.75rem 0.6rem; }
+  .site-nav__item > a,
+  .dropdown-toggle { width: 100%; justify-content: space-between; padding: 0.45rem 0.5rem; }
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    border-left: 3px solid var(--primary-soft);
+    border-radius: 0;
+    margin: 0 0 0 0.75rem;
+    padding: 0.1rem 0;
+    /* Closed by default on mobile — JS click opens it */
+    display: none;
+    pointer-events: none;
+  }
+  .dropdown-toggle[aria-expanded="true"] + .dropdown-menu {
+    display: block;
+    pointer-events: auto;
+  }
+  .dropdown-menu li a { padding: 0.35rem 0.6rem; }
+}
+
+/* Legacy: hide old nav-sep items */
+.site-nav .nav-sep { display: none; }
+.site-nav ul:not(.site-nav__list) {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.15rem 1.25rem;
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 0.5rem 1.25rem 0.75rem;
 }
-/* Opened from the Menu button: a fixed panel under the pinned bar, scrolling
-   inside itself if taller than the screen. */
-body.js .site-nav--overlay {
-  position: fixed;
-  top: var(--header-h);
-  left: 0;
-  right: 0;
-  z-index: 49;
-  box-shadow: var(--shadow);
-  max-height: calc(100vh - var(--header-h));
-  max-height: calc(100dvh - var(--header-h));
-  overflow-y: auto;
-}
-.site-nav a {
+.site-nav a:not(.dropdown-menu a):not(.site-nav__item > a) {
   display: block;
   padding: 0.35rem 0.7rem;
   border-radius: 8px;
@@ -200,33 +332,9 @@ body.js .site-nav--overlay {
   font-weight: 500;
   border: 1px solid transparent;
 }
-.site-nav a:hover {
+.site-nav a:not(.dropdown-menu a):not(.site-nav__item > a):hover {
   color: var(--primary-strong);
   background: var(--primary-soft);
-}
-.site-nav a[aria-current="page"] {
-  color: var(--primary-strong);
-  background: var(--primary-soft);
-  border-color: var(--primary);
-  font-weight: 600;
-}
-.site-nav .nav-sep {
-  display: block;
-  grid-column: 1 / -1;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--text-soft);
-  padding: 0.6rem 0.7rem 0.1rem;
-  margin-top: 0.2rem;
-  border-top: 1px solid var(--border);
-  pointer-events: none;
-  user-select: none;
-}
-
-@media (max-width: 47rem) {
-  .site-title__tag { display: none; }
 }
 
 /* ---- Layout ------------------------------------------------------------- */
