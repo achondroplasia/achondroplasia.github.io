@@ -224,6 +224,10 @@ body.js .site-nav[hidden] { display: none; }
   background: var(--primary-soft);
   font-weight: 600;
 }
+.dropdown-toggle:has(+ .dropdown-menu a[aria-current="page"]) {
+  color: var(--primary-strong);
+  font-weight: 600;
+}
 
 /* Arrow indicator */
 .dropdown-arrow {
