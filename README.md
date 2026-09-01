@@ -22,6 +22,7 @@ Built as a plain static site (no build step) and hosted on GitHub Pages:
 | [Nutrition & Exercise](nutrition.html) | BMI caveats, weight management, safe exercise, physical therapy, bone health |
 | [Dental & Oral Health](dental.html) | Malocclusion, orthodontics, jaw surgery, mouth breathing, daily hygiene |
 | [Everyday Life](daily-living.html) | Home, car, school, clothing, travel, sports, assistive tech |
+| [Careers & Work](career.html) | Employment data, legal protections, disclosure, accommodations, career choice, discrimination, entrepreneurship, disability benefits |
 | [Wellbeing & Community](wellbeing.html) | Mental health, parenting, support organizations worldwide |
 | [Care Checklist](checklist.html) | Age-by-age monitoring schedule from published clinical guidelines |
 | [Warning Signs](warning-signs.html) | Symptoms that need urgent medical attention, printable ER card |
