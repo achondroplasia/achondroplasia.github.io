@@ -267,9 +267,14 @@
     navToggle.addEventListener('click', function () { closeAll(null); });
   }
 
-  /* Escape closes all */
+  /* Escape closes all, returning focus to the open toggle if any */
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { closeAll(null); }
+    if (e.key !== 'Escape') return;
+    var open = Array.prototype.find.call(toggles, function (t) {
+      return t.getAttribute('aria-expanded') === 'true';
+    });
+    closeAll(null);
+    if (open) open.focus();
   });
 
   /* Mark current page link */
