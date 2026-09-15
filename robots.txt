@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shubhamtatvamasi.com/achondroplasia/sitemap.xml
+Sitemap: https://achondroplasia.github.io/sitemap.xml

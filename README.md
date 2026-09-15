@@ -5,7 +5,7 @@
 A free, comprehensive family guide to achondroplasia — from birth through adulthood.  
 Built as a plain static site (no build step) and hosted on GitHub Pages:
 
-**🌐 https://shubhamtatvamasi.com/achondroplasia/**
+**🌐 https://achondroplasia.github.io/**
 
 ---
 
