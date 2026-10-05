@@ -1,0 +1,12 @@
+---
+interface Props {
+  kicker?: string;
+  title?: string;
+}
+const { kicker, title } = Astro.props;
+---
+<div class="card">
+  {kicker && <span class="card__kicker">{kicker}</span>}
+  {title && <h3>{title}</h3>}
+  <slot />
+</div>

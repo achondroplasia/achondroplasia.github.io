@@ -1,0 +1,42 @@
+---
+import { site, nav } from "../data/site";
+
+interface Props {
+  current: string; // href of the page being rendered
+}
+const { current } = Astro.props;
+const here = (href: string) => (href === current ? "page" : undefined);
+---
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__top">
+      <a class="site-title" href="/">
+        <img src="/favicon.svg" alt="" width="32" height="32">
+        <span class="site-title__name">{site.name}</span>
+      </a>
+      <p class="site-title__tag">{site.tagline}</p>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
+  </div>
+</header>
+
+<nav class="site-nav" id="site-nav" aria-label="Site">
+  <ul class="site-nav__list">
+    {nav.map((entry) =>
+      "items" in entry ? (
+        <li class="site-nav__item has-dropdown">
+          <button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+            {entry.label} <span class="dropdown-arrow" aria-hidden="true">▾</span>
+          </button>
+          <ul class="dropdown-menu">
+            {entry.items.map((item) => (
+              <li><a href={item.href} aria-current={here(item.href)}>{item.label}</a></li>
+            ))}
+          </ul>
+        </li>
+      ) : (
+        <li class="site-nav__item"><a href={entry.href} aria-current={here(entry.href)}>{entry.label}</a></li>
+      )
+    )}
+  </ul>
+</nav>

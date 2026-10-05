@@ -1,0 +1,16 @@
+---
+import { readingOrder, href } from "../data/site";
+
+interface Props {
+  slug: string;
+}
+const i = readingOrder.findIndex(([s]) => s === Astro.props.slug);
+const prev = i > 0 ? readingOrder[i - 1] : undefined;
+const next = i >= 0 ? readingOrder[(i + 1) % readingOrder.length] : undefined;
+---
+{i > 0 && (
+  <nav class="page-nav" aria-label="Adjacent pages">
+    {prev && <a href={href(prev[0])}>← Previous: {prev[1]}</a>}
+    {next && <a href={href(next[0])}>Next: {next[1]} →</a>}
+  </nav>
+)}

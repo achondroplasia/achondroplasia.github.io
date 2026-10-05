@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from "astro:content";
+import Page from "../layouts/Page.astro";
+import Callout from "../components/Callout.astro";
+import Grid from "../components/Grid.astro";
+import Card from "../components/Card.astro";
+import LinkCard from "../components/LinkCard.astro";
+import AgeBand from "../components/AgeBand.astro";
+import Facts from "../components/Facts.astro";
+import Fact from "../components/Fact.astro";
+import Hero from "../components/Hero.astro";
+
+export async function getStaticPaths() {
+  const pages = await getCollection("pages");
+  return pages.map((entry) => ({
+    params: { slug: entry.id === "index" ? undefined : entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, Hero };
+---
+<Page entry={entry} headings={headings}>
+  <Content components={components} />
+</Page>

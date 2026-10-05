@@ -1,0 +1,19 @@
+---
+interface Props {
+  href: string;
+  kicker?: string;
+  title: string;
+}
+const { href, kicker, title } = Astro.props;
+const external = /^https?:\/\//.test(href);
+---
+<a
+  class="card card--link"
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+>
+  {kicker && <span class="card__kicker">{kicker}</span>}
+  <h3>{title}</h3>
+  <slot />
+</a>

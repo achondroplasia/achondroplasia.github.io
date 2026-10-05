@@ -1,0 +1,26 @@
+---
+import { markdownToHtml } from "satteri";
+import { externalLinks } from "../plugins/content.mjs";
+
+interface Props {
+  intro?: string;
+  items: string[];
+  lastReviewed?: Date;
+}
+const { intro, items, lastReviewed } = Astro.props;
+
+/* Each source is a single line of Markdown; render it without the <p>. */
+const render = (md: string) =>
+  markdownToHtml(md, { hastPlugins: [externalLinks], features: { smartPunctuation: false } })
+    .html.trim()
+    .replace(/^<p>([\s\S]*)<\/p>$/, "$1");
+const reviewed = lastReviewed?.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
+---
+<section class="sources">
+  <h2>Sources</h2>
+  {intro && <p>{intro}</p>}
+  <ol>
+    {items.map((item) => <li set:html={render(item)} />)}
+  </ol>
+  {reviewed && <p class="updated">Content last reviewed: {reviewed}.</p>}
+</section>

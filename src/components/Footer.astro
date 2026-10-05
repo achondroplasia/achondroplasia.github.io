@@ -1,0 +1,24 @@
+---
+import { footer } from "../data/site";
+---
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__cols">
+      {footer.map((group) => (
+        <div>
+          <h2>{group.label}</h2>
+          <ul>
+            {group.items.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+    <p class="disclaimer"><strong>This site is educational, not medical advice.</strong>
+      It is written for families and people living with achondroplasia, compiled from
+      published clinical guidelines and peer-reviewed research. It cannot replace the
+      judgment of clinicians who know you or your child. Always discuss decisions with
+      your own care team — ideally one experienced with skeletal dysplasias.
+      If you think someone is having a medical emergency, call your local emergency
+      number now.</p>
+  </div>
+</footer>
