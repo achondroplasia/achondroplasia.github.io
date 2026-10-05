@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
     "check:links": "node scripts/check-links.mjs",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "check:citations": "node scripts/check-citations.mjs",
+    "check:external": "node scripts/check-external-links.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.2",

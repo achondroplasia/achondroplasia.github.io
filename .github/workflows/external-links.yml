@@ -1,0 +1,26 @@
+name: Weekly external link check
+
+# Reports dead off-site links (sources, organisations). Runs weekly and on
+# demand; it never blocks a deploy. A failing run means something to fix.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  external-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # shell: bash adds pipefail, so a dead link still fails the run through tee
+      - shell: bash
+        run: npm run check:external | tee -a "$GITHUB_STEP_SUMMARY"

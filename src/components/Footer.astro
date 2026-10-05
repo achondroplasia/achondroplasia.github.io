@@ -14,7 +14,11 @@ const columns = groups.map((g, i) => ({ ...g, pages: i === 0 ? [...start.pages, 
           <span>{site.name}</span>
         </a>
         <p>{site.tagline}. Free, open source, and ad-free, with a published source for every claim.</p>
-        <p><a href={site.repo}>Suggest a correction on GitHub</a></p>
+        <ul>
+          <li><a href="/about">About &amp; editorial policy</a></li>
+          <li><a href="/updates">What's new</a></li>
+          <li><a href={`${site.repo}/issues`}>Suggest a correction on GitHub</a></li>
+        </ul>
       </div>
       <div class="site-footer__cols">
         {columns.map((group) => (
