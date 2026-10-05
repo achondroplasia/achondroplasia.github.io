@@ -1,4 +1,6 @@
-/* Site-wide structure: the one place to add, rename, or reorder a page. */
+/* Site-wide structure: the one place to add, rename, or reorder a page.
+   Header nav, footer, home-page directory, breadcrumbs, and the
+   previous/next links are all generated from `sections`. */
 
 export const site = {
   name: "Achondroplasia Guide",
@@ -8,126 +10,95 @@ export const site = {
   author: "Shubham Tatvamasi",
 };
 
-export type NavLink = { label: string; href: string };
-export type NavGroup = { label: string; items: NavLink[] };
+/** Icon names map to components in src/components/Icon.astro */
+export type IconName =
+  | "dna" | "baby" | "backpack" | "graduation" | "user" | "pill" | "apple"
+  | "smile" | "eye" | "school" | "activity" | "syringe" | "house"
+  | "briefcase" | "heart" | "globe" | "flask" | "clipboard" | "siren"
+  | "library" | "book";
 
-/* Header navigation */
-export const nav: (NavLink | NavGroup)[] = [
-  { label: "Home", href: "/" },
-  { label: "Understanding It", href: "/understanding" },
-  {
-    label: "Life Stages",
-    items: [
-      { label: "First Years (0–2)", href: "/first-years" },
-      { label: "Childhood (2–12)", href: "/childhood" },
-      { label: "Teen Years", href: "/teens" },
-      { label: "Adults & Aging", href: "/adults" },
-    ],
-  },
-  {
-    label: "Health & Care",
-    items: [
-      { label: "Treatments", href: "/treatments" },
-      { label: "Nutrition & Exercise", href: "/nutrition" },
-      { label: "Dental & Oral Health", href: "/dental" },
-      { label: "Vision & Eye Health", href: "/vision" },
-      { label: "Learning & School", href: "/learning" },
-      { label: "Pain Management", href: "/pain" },
-      { label: "Immunizations", href: "/immunizations" },
-    ],
-  },
-  {
-    label: "Daily Life",
-    items: [
-      { label: "Everyday Life", href: "/daily-living" },
-      { label: "Careers & Work", href: "/career" },
-      { label: "Wellbeing & Community", href: "/wellbeing" },
-      { label: "Global Resources", href: "/international" },
-      { label: "Research & Trials", href: "/research" },
-    ],
-  },
-  {
-    label: "Reference",
-    items: [
-      { label: "Care Checklist", href: "/checklist" },
-      { label: "Warning Signs", href: "/warning-signs" },
-      { label: "Medical Library", href: "/medical-library" },
-      { label: "Glossary", href: "/glossary" },
-    ],
-  },
-];
+export type PageLink = { slug: string; label: string; icon: IconName };
+export type Section = { id: string; label: string; blurb: string; pages: PageLink[] };
 
-/* Footer columns */
-export const footer: NavGroup[] = [
+export const sections: Section[] = [
   {
+    id: "start",
+    label: "Start here",
+    blurb: "What achondroplasia is, and what it means.",
+    pages: [{ slug: "understanding", label: "Understanding achondroplasia", icon: "dna" }],
+  },
+  {
+    id: "life-stages",
     label: "Life stages",
-    items: [
-      { label: "First years (0–2)", href: "/first-years" },
-      { label: "Childhood (2–12)", href: "/childhood" },
-      { label: "Teen years", href: "/teens" },
-      { label: "Adults & aging", href: "/adults" },
-      { label: "Understanding it", href: "/understanding" },
+    blurb: "What matters at each age, from the newborn checks to healthy aging.",
+    pages: [
+      { slug: "first-years", label: "First years (0–2)", icon: "baby" },
+      { slug: "childhood", label: "Childhood (2–12)", icon: "backpack" },
+      { slug: "teens", label: "Teen years", icon: "graduation" },
+      { slug: "adults", label: "Adults & aging", icon: "user" },
     ],
   },
   {
-    label: "Medical care",
-    items: [
-      { label: "Treatments", href: "/treatments" },
-      { label: "Pain management", href: "/pain" },
-      { label: "Nutrition & exercise", href: "/nutrition" },
-      { label: "Dental & oral health", href: "/dental" },
-      { label: "Vision & eye health", href: "/vision" },
-      { label: "Immunizations", href: "/immunizations" },
+    id: "health",
+    label: "Health & care",
+    blurb: "Treatments, and the body systems that need the most attention.",
+    pages: [
+      { slug: "treatments", label: "Treatments", icon: "pill" },
+      { slug: "nutrition", label: "Nutrition & exercise", icon: "apple" },
+      { slug: "dental", label: "Dental & oral health", icon: "smile" },
+      { slug: "vision", label: "Vision & eye health", icon: "eye" },
+      { slug: "learning", label: "Learning & school", icon: "school" },
+      { slug: "pain", label: "Pain management", icon: "activity" },
+      { slug: "immunizations", label: "Immunizations", icon: "syringe" },
     ],
   },
   {
+    id: "daily-life",
     label: "Daily life",
-    items: [
-      { label: "Everyday life", href: "/daily-living" },
-      { label: "Careers & work", href: "/career" },
-      { label: "Learning & school", href: "/learning" },
-      { label: "Wellbeing & community", href: "/wellbeing" },
-      { label: "Global resources", href: "/international" },
-      { label: "Research & trials", href: "/research" },
+    blurb: "Home, work, community, and the wider world of research.",
+    pages: [
+      { slug: "daily-living", label: "Everyday life", icon: "house" },
+      { slug: "career", label: "Careers & work", icon: "briefcase" },
+      { slug: "wellbeing", label: "Wellbeing & community", icon: "heart" },
+      { slug: "international", label: "Global resources", icon: "globe" },
+      { slug: "research", label: "Research & trials", icon: "flask" },
     ],
   },
   {
+    id: "reference",
     label: "Reference",
-    items: [
-      { label: "Care checklist", href: "/checklist" },
-      { label: "Warning signs", href: "/warning-signs" },
-      { label: "Medical library", href: "/medical-library" },
-      { label: "Glossary", href: "/glossary" },
+    blurb: "Tools to print, bookmark, and take to appointments.",
+    pages: [
+      { slug: "checklist", label: "Care checklist", icon: "clipboard" },
+      { slug: "warning-signs", label: "Warning signs", icon: "siren" },
+      { slug: "medical-library", label: "Medical library", icon: "library" },
+      { slug: "glossary", label: "Glossary", icon: "book" },
     ],
   },
-];
-
-/* Reading order for the "← Previous / Next →" links at the foot of each
-   page; the label is how the neighbouring pages refer to it. The chain
-   loops back home from the last page. */
-export const readingOrder: [slug: string, label: string][] = [
-  ["index", "Home"],
-  ["understanding", "Understanding It"],
-  ["first-years", "The First Years"],
-  ["childhood", "Childhood"],
-  ["teens", "The Teen Years"],
-  ["adults", "Adults & Aging"],
-  ["treatments", "Treatments"],
-  ["nutrition", "Nutrition & Exercise"],
-  ["dental", "Dental & Oral Health"],
-  ["vision", "Vision & Eye Health"],
-  ["learning", "Learning & School"],
-  ["pain", "Pain Management"],
-  ["immunizations", "Immunizations"],
-  ["daily-living", "Everyday Life"],
-  ["career", "Careers & Work"],
-  ["wellbeing", "Wellbeing & Community"],
-  ["international", "Global Resources"],
-  ["research", "Research & Trials"],
-  ["checklist", "Care Checklist"],
-  ["warning-signs", "Warning Signs"],
-  ["medical-library", "Medical Library"],
-  ["glossary", "Glossary"],
 ];
 
 export const href = (slug: string) => (slug === "index" ? "/" : `/${slug}`);
+
+/* Every page in reading order (home first), for previous/next links. */
+export const readingOrder: PageLink[] = [
+  { slug: "index", label: "Home", icon: "house" },
+  ...sections.flatMap((s) => s.pages),
+];
+
+export const findPage = (slug: string) => {
+  for (const section of sections) {
+    const page = section.pages.find((p) => p.slug === slug);
+    if (page) return { section, page };
+  }
+  return undefined;
+};
+
+/* "Start where you are" paths on the home page */
+export const paths: { label: string; detail: string; slug: string; icon: IconName }[] = [
+  { label: "We just got a diagnosis", detail: "What it is, why it happened, what comes next", slug: "understanding", icon: "dna" },
+  { label: "Our baby is 0–2", detail: "The checks that matter most, and safe handling", slug: "first-years", icon: "baby" },
+  { label: "Raising a child", detail: "Ears, legs, sleep, school, and friendships", slug: "childhood", icon: "backpack" },
+  { label: "I'm a teenager", detail: "Identity, driving, and taking charge of your care", slug: "teens", icon: "graduation" },
+  { label: "I'm an adult", detail: "Spinal health, pain, pregnancy, work rights", slug: "adults", icon: "user" },
+  { label: "I'm a clinician or teacher", detail: "The guidelines and the evidence, annotated", slug: "medical-library", icon: "library" },
+];

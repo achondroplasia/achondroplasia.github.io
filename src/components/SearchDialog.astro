@@ -1,0 +1,20 @@
+---
+import Icon from "./Icon.astro";
+---
+<dialog class="search-dialog" id="search-dialog" aria-label="Search the guide">
+  <div class="search-dialog__bar">
+    <Icon name="search" />
+    <input
+      type="search"
+      placeholder="Search, e.g. “sleep study” or “vosoritide”"
+      aria-label="Search the guide"
+      aria-controls="search-results"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button type="button" data-search-close aria-label="Close search"><kbd>Esc</kbd></button>
+  </div>
+  <div class="search-dialog__results" id="search-results" aria-live="polite">
+    <p class="search-dialog__status">Search all 21 pages, including every glossary term and section heading.</p>
+  </div>
+</dialog>

@@ -1,16 +1,27 @@
 ---
 import { readingOrder, href } from "../data/site";
+import Icon from "./Icon.astro";
 
 interface Props {
   slug: string;
 }
-const i = readingOrder.findIndex(([s]) => s === Astro.props.slug);
+const i = readingOrder.findIndex((p) => p.slug === Astro.props.slug);
 const prev = i > 0 ? readingOrder[i - 1] : undefined;
 const next = i >= 0 ? readingOrder[(i + 1) % readingOrder.length] : undefined;
 ---
 {i > 0 && (
   <nav class="page-nav" aria-label="Adjacent pages">
-    {prev && <a href={href(prev[0])}>← Previous: {prev[1]}</a>}
-    {next && <a href={href(next[0])}>Next: {next[1]} →</a>}
+    {prev && (
+      <a href={href(prev.slug)} rel="prev">
+        <span class="page-nav__dir"><Icon name="prev" size={16} /> Previous</span>
+        {prev.label}
+      </a>
+    )}
+    {next && (
+      <a class="page-nav__next" href={href(next.slug)} rel="next">
+        <span class="page-nav__dir">Next <Icon name="next" size={16} /></span>
+        {next.label}
+      </a>
+    )}
   </nav>
 )}

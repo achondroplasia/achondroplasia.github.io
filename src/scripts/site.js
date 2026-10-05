@@ -1,233 +1,155 @@
-/* Achondroplasia Guide — progressive enhancements (site works fully without JS) */
-(function () {
-  "use strict";
+/* Achondroplasia Guide — progressive enhancements.
+   Navigation, menus, and the table of contents are <details> elements and
+   plain links, so the site works fully without JavaScript. This adds:
+   menu housekeeping, the current-section highlight, search, and print. */
 
-  document.body.classList.add("js");
+/* ---- Menus ------------------------------------------------------------- */
+const menus = [...document.querySelectorAll(".nav-group, .mobile-nav")];
 
-  /* The bar is pinned (position: sticky). Publish its measured height as
-     --header-h so anchor jumps, the sidebar TOC, and the menu panel clear it. */
-  var header = document.querySelector(".site-header");
-  if (header) {
-    var setHeaderHeight = function () {
-      document.documentElement.style.setProperty(
-        "--header-h",
-        header.offsetHeight + "px"
-      );
-    };
-    setHeaderHeight();
-    if ("ResizeObserver" in window) {
-      new ResizeObserver(setHeaderHeight).observe(header);
-    } else {
-      window.addEventListener("resize", setHeaderHeight);
+const closeMenus = (except) => {
+  for (const m of menus) if (m !== except) m.open = false;
+};
+
+for (const menu of menus) {
+  menu.addEventListener("toggle", () => {
+    if (menu.open) closeMenus(menu);
+    if (menu.classList.contains("mobile-nav")) {
+      document.documentElement.style.overflow = menu.open ? "hidden" : "";
     }
+  });
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".nav-group, .mobile-nav")) closeMenus();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  const open = menus.find((m) => m.open);
+  if (open) {
+    open.open = false;
+    open.querySelector("summary").focus();
   }
+});
 
-  /* Site nav. On wide screens it starts "docked": in normal flow below the
-     bar, fully visible, scrolling away with the page. Once it has scrolled
-     out of view it collapses behind the Menu button, which reopens it as a
-     fixed panel under the bar. Phones skip the docked stage. A spacer of
-     equal height stands in for the collapsed nav so the swap never shifts
-     the page. */
-  var toggle = document.querySelector(".nav-toggle");
-  var nav = document.querySelector(".site-nav");
-  if (header && toggle && nav) {
-    var desktop = window.matchMedia("(min-width: 47.01rem)");
-    var spacer = document.createElement("div");
-    spacer.setAttribute("aria-hidden", "true");
-    var state; // "docked" | "collapsed" | "overlay"
-    var navH = 0;
-    var collapsePoint = 0;
+/* ---- Current section in "On this page" -------------------------------------- */
+const tocLinks = [...document.querySelectorAll("[data-toc-link]")];
+if (tocLinks.length) {
+  const byId = new Map(tocLinks.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+  const headings = [...byId.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+  let ticking = false;
 
-    var dock = function () {
-      nav.classList.remove("site-nav--overlay");
-      nav.hidden = false;
-      spacer.remove();
-      toggle.hidden = true;
-      toggle.setAttribute("aria-expanded", "false");
-      state = "docked";
-      navH = nav.offsetHeight;
-      collapsePoint = nav.offsetTop + navH - header.offsetHeight;
-    };
-    var collapse = function () {
-      nav.classList.remove("site-nav--overlay");
-      nav.hidden = true;
-      if (desktop.matches) {
-        spacer.style.height = navH + "px";
-        if (!spacer.parentNode) nav.parentNode.insertBefore(spacer, nav);
-      } else {
-        spacer.remove();
-      }
-      toggle.hidden = false;
-      toggle.setAttribute("aria-expanded", "false");
-      state = "collapsed";
-    };
-    var openOverlay = function () {
-      nav.classList.add("site-nav--overlay");
-      nav.hidden = false;
-      toggle.setAttribute("aria-expanded", "true");
-      state = "overlay";
-    };
+  // The current section is the last heading scrolled into the top third.
+  const update = () => {
+    ticking = false;
+    let current = headings[0];
+    for (const h of headings) {
+      if (h.getBoundingClientRect().top < innerHeight * 0.3) current = h;
+    }
+    for (const a of tocLinks) a.removeAttribute("aria-current");
+    byId.get(current.id)?.setAttribute("aria-current", "true");
+  };
+  addEventListener(
+    "scroll",
+    () => {
+      if (!ticking) requestAnimationFrame(update);
+      ticking = true;
+    },
+    { passive: true }
+  );
+  update();
+}
 
-    /* Scroll only moves us between docked and collapsed on wide screens;
-       an open panel is left alone. */
-    var sync = function () {
-      if (!desktop.matches) return;
-      if (state === "docked") {
-        if (window.scrollY >= collapsePoint) collapse();
-      } else if (state === "collapsed" && window.scrollY < collapsePoint) {
-        dock();
-      }
-    };
-    var onModeChange = function () {
-      if (desktop.matches) {
-        dock(); // measure in the docked state
-        sync();
-      } else {
-        collapse();
-      }
-    };
-    onModeChange();
+/* ---- Print ---------------------------------------------------------------- */
+for (const button of document.querySelectorAll("[data-print]")) {
+  button.hidden = false;
+  button.addEventListener("click", () => print());
+}
 
-    var ticking = false;
-    window.addEventListener(
-      "scroll",
-      function () {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(function () {
-          ticking = false;
-          sync();
-        });
-      },
-      { passive: true }
-    );
-    desktop.addEventListener("change", onModeChange);
-    window.addEventListener("resize", function () {
-      if (state === "docked") dock(); // re-measure after reflow
-    });
+/* ---- Search (Pagefind, loaded on first use) ------------------------------- */
+const dialog = document.getElementById("search-dialog");
+if (dialog) {
+  const input = dialog.querySelector("input");
+  const results = dialog.querySelector("#search-results");
+  const initial = results.innerHTML;
+  let pagefind;
+  let latest = 0;
 
-    toggle.addEventListener("click", function () {
-      state === "overlay" ? collapse() : openOverlay();
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && state === "overlay") {
-        collapse();
-        toggle.focus();
-      }
-    });
-    document.addEventListener("click", function (e) {
-      if (
-        state === "overlay" &&
-        !e.target.closest(".site-header") &&
-        !e.target.closest(".site-nav")
-      ) {
-        collapse();
-      }
-    });
+  const openSearch = () => {
+    closeMenus();
+    if (!dialog.open) dialog.showModal();
+    input.select();
+  };
+
+  for (const b of document.querySelectorAll("[data-search-open]")) {
+    b.hidden = false;
+    b.addEventListener("click", openSearch);
   }
-
-  /* The "On this page" list is rendered at build time from the h2s. */
-  var toc = document.querySelector(".toc");
-  var tocList = toc && toc.querySelector("ul");
-  var main = document.querySelector("main");
-  var count = tocList ? tocList.children.length : 0;
-
-  /* On narrow screens the sidebar would otherwise sit above the page title.
-     Move it below the intro instead, and collapse it so it stays out of the
-     way of the reading. */
-  if (toc && count) {
-    var anchorEl = main.querySelector(".lede") || main.querySelector("h1");
-    var home = document.createComment("toc");
-    toc.parentNode.insertBefore(home, toc);
-
-    var summary = document.createElement("button");
-    summary.className = "toc__toggle";
-    summary.type = "button";
-    summary.setAttribute("aria-expanded", "false");
-    summary.setAttribute("aria-controls", "toc-list");
-    summary.textContent = "On this page (" + count + " sections)";
-    tocList.id = "toc-list";
-    summary.addEventListener("click", function () {
-      var open = summary.getAttribute("aria-expanded") === "true";
-      summary.setAttribute("aria-expanded", String(!open));
-      tocList.hidden = open;
-    });
-
-    var narrow = window.matchMedia("(max-width: 61.99rem)");
-    var placeToc = function () {
-      if (narrow.matches) {
-        if (anchorEl && anchorEl.nextSibling !== toc) {
-          anchorEl.parentNode.insertBefore(toc, anchorEl.nextSibling);
-        }
-        if (!summary.parentNode) toc.insertBefore(summary, tocList);
-        toc.classList.add("toc--collapsible");
-        tocList.hidden = summary.getAttribute("aria-expanded") !== "true";
-      } else {
-        if (home.parentNode && home.nextSibling !== toc) {
-          home.parentNode.insertBefore(toc, home);
-        }
-        if (summary.parentNode) summary.remove();
-        toc.classList.remove("toc--collapsible");
-        tocList.hidden = false;
-      }
-    };
-    placeToc();
-    narrow.addEventListener("change", placeToc);
-
-    /* Collapse again after jumping to a section */
-    tocList.addEventListener("click", function (e) {
-      if (e.target.tagName === "A" && narrow.matches) {
-        summary.setAttribute("aria-expanded", "false");
-        tocList.hidden = true;
-      }
-    });
-  }
-})();
-
-
-/* ---- Dropdown navigation ---------------------------------------- */
-(function () {
-  "use strict";
-  var toggles = document.querySelectorAll('.dropdown-toggle');
-  if (!toggles.length) return;
-
-  /* Ensure all dropdowns start CLOSED */
-  toggles.forEach(function (t) { t.setAttribute('aria-expanded', 'false'); });
-
-  function closeAll(except) {
-    toggles.forEach(function (t) {
-      if (t !== except) t.setAttribute('aria-expanded', 'false');
-    });
-  }
-
-  /* Click: toggle open/close (works on both desktop and mobile) */
-  toggles.forEach(function (toggle) {
-    toggle.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = toggle.getAttribute('aria-expanded') === 'true';
-      closeAll(toggle);
-      /* On mobile only: toggle. On desktop, hover handles it via CSS so
-         clicking just toggles as an alternative. */
-      toggle.setAttribute('aria-expanded', String(!open));
-    });
+  dialog.querySelector("[data-search-close]").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close(); // backdrop
   });
 
-  /* Close dropdowns when clicking anywhere else */
-  document.addEventListener('click', function () { closeAll(null); });
-
-  /* Close dropdowns when nav collapses */
-  var navToggle = document.querySelector('.nav-toggle');
-  if (navToggle) {
-    navToggle.addEventListener('click', function () { closeAll(null); });
-  }
-
-  /* Escape closes all, returning focus to the open toggle if any */
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
-    var open = Array.prototype.find.call(toggles, function (t) {
-      return t.getAttribute('aria-expanded') === 'true';
-    });
-    closeAll(null);
-    if (open) open.focus();
+  document.addEventListener("keydown", (e) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+    if ((e.key === "/" && !typing) || (e.key === "k" && (e.metaKey || e.ctrlKey))) {
+      e.preventDefault();
+      openSearch();
+    }
   });
-})();
+
+  const escape = (s) =>
+    s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  // Pagefind reports built file paths; the site serves them without ".html".
+  const clean = (url) => url.replace(/\.html(?=#|$)/, "").replace(/^\/index(?=#|$)/, "/");
+
+  const render = (items, query) => {
+    if (!items.length) {
+      results.innerHTML = `<p class="search-dialog__status">No pages mention “${escape(query)}”. Try a simpler word, or browse the <a href="/glossary">glossary</a>.</p>`;
+      return;
+    }
+    results.innerHTML =
+      "<ol>" +
+      items
+        .map((r) => {
+          const subs = (r.sub_results || [])
+            .filter((s) => s.url.includes("#"))
+            .slice(0, 3)
+            .map(
+              (s) =>
+                `<li><a class="search-result" href="${clean(s.url)}"><span class="search-result__title">${escape(s.title)}</span><span class="search-result__excerpt">${s.excerpt}</span></a></li>`
+            )
+            .join("");
+          return `<li><a class="search-result" href="${clean(r.url)}"><span class="search-result__title">${escape(r.meta.title || "")}</span><span class="search-result__excerpt">${r.excerpt}</span></a>${subs ? `<ol class="search-subresults">${subs}</ol>` : ""}</li>`;
+        })
+        .join("") +
+      "</ol>";
+  };
+
+  let timer;
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const query = input.value.trim();
+      const id = ++latest;
+      if (!query) {
+        results.innerHTML = initial;
+        return;
+      }
+      try {
+        pagefind ??= await import(/* @vite-ignore */ "/pagefind/pagefind.js");
+        const search = await pagefind.search(query);
+        const items = await Promise.all(search.results.slice(0, 8).map((r) => r.data()));
+        if (id === latest) render(items, query);
+      } catch {
+        results.innerHTML =
+          '<p class="search-dialog__status">Search is unavailable here. (The search index is built with <code>npm run build</code>.)</p>';
+      }
+    }, 120);
+  });
+
+  // Close the dialog when a result on the same page is chosen.
+  results.addEventListener("click", (e) => {
+    if (e.target.closest("a")) dialog.close();
+  });
+}

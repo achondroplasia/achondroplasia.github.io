@@ -1,0 +1,28 @@
+---
+import { paths, href } from "../data/site";
+import Icon from "./Icon.astro";
+---
+<ul class="paths">
+  {paths.map((p) => (
+    <li>
+      <a class="path" href={href(p.slug)}>
+        <span class="path__icon"><Icon name={p.icon} size={22} /></span>
+        <span class="path__text">
+          <span class="path__label">{p.label}</span>
+          <span class="path__detail">{p.detail}</span>
+        </span>
+        <Icon name="next" size={18} class="path__arrow" />
+      </a>
+    </li>
+  ))}
+  <li>
+    <a class="path path--urgent" href="/warning-signs">
+      <span class="path__icon"><Icon name="siren" size={22} /></span>
+      <span class="path__text">
+        <span class="path__label">Something is wrong right now</span>
+        <span class="path__detail">Warning signs that need urgent care, by age</span>
+      </span>
+      <Icon name="next" size={18} class="path__arrow" />
+    </a>
+  </li>
+</ul>

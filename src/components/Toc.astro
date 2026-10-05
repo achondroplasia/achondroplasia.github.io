@@ -1,0 +1,31 @@
+---
+import type { MarkdownHeading } from "astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+  variant: "sidebar" | "inline";
+  hasSources: boolean;
+}
+const { headings, variant, hasSources } = Astro.props;
+const list = headings.filter((h) => h.depth === 2);
+---
+{variant === "sidebar" ? (
+  <nav class="toc" aria-label="On this page">
+    <h2><Icon name="toc" size={16} /> On this page</h2>
+    <ol>
+      {list.map((h) => <li><a href={`#${h.slug}`} data-toc-link>{h.text}</a></li>)}
+    </ol>
+    <div class="toc__actions">
+      {hasSources && <a href="#sources"><Icon name="sources" size={16} /> Sources</a>}
+      <button type="button" data-print hidden><Icon name="print" size={16} /> Print this page</button>
+    </div>
+  </nav>
+) : (
+  <details class="toc-mobile">
+    <summary><Icon name="toc" size={16} /> On this page ({list.length} sections) <Icon name="chevron" size={16} class="chev" /></summary>
+    <ol>
+      {list.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ol>
+  </details>
+)}

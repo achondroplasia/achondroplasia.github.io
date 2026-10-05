@@ -1,17 +1,31 @@
 ---
-import { footer } from "../data/site";
+import { site, sections, href } from "../data/site";
+
+/* "Start here" has one page; fold it into the first column. */
+const [start, ...groups] = sections;
+const columns = groups.map((g, i) => ({ ...g, pages: i === 0 ? [...start.pages, ...g.pages] : g.pages }));
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
-    <div class="site-footer__cols">
-      {footer.map((group) => (
-        <div>
-          <h2>{group.label}</h2>
-          <ul>
-            {group.items.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
-          </ul>
-        </div>
-      ))}
+    <div class="site-footer__top">
+      <div class="site-footer__about">
+        <a class="brand" href="/">
+          <img src="/favicon.svg" alt="" width="34" height="34">
+          <span>{site.name}</span>
+        </a>
+        <p>{site.tagline}. Free, open source, and ad-free, with a published source for every claim.</p>
+        <p><a href={site.repo}>Suggest a correction on GitHub</a></p>
+      </div>
+      <div class="site-footer__cols">
+        {columns.map((group) => (
+          <div>
+            <h2>{group.label}</h2>
+            <ul>
+              {group.pages.map((p) => <li><a href={href(p.slug)}>{p.label}</a></li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
     <p class="disclaimer"><strong>This site is educational, not medical advice.</strong>
       It is written for families and people living with achondroplasia, compiled from

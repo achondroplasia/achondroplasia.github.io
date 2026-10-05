@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+import { sections, href } from "../data/site";
+import { inlineMarkdown } from "../lib/markdown";
+import Icon from "./Icon.astro";
+
+const entries = await getCollection("pages");
+const summary = (slug: string) => entries.find((e) => e.id === slug)?.data.summary ?? "";
+const count = sections.reduce((n, s) => n + s.pages.length, 0);
+---
+<p>{count} pages cover the whole territory, by life stage, by topic, and as quick reference. Every page stands alone, so start wherever your question is.</p>
+<div class="directory">
+  {sections.map((section) => (
+    <section class="directory__section" aria-labelledby={`dir-${section.id}`}>
+      <header>
+        <h3 id={`dir-${section.id}`}>{section.label}</h3>
+        <p>{section.blurb}</p>
+      </header>
+      <div class="directory__cards">
+        {section.pages.map((p) => (
+          <a class="dir-card" href={href(p.slug)}>
+            <Icon name={p.icon} size={22} />
+            <span class="dir-card__label">{p.label}</span>
+            <span class="dir-card__summary" set:html={inlineMarkdown(summary(p.slug))} />
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</div>

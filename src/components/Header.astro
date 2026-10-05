@@ -1,42 +1,76 @@
 ---
-import { site, nav } from "../data/site";
+import { site, sections, href } from "../data/site";
+import Icon from "./Icon.astro";
 
 interface Props {
-  current: string; // href of the page being rendered
+  current: string; // slug of the page being rendered
 }
 const { current } = Astro.props;
-const here = (href: string) => (href === current ? "page" : undefined);
+const here = (slug: string) => (slug === current ? "page" : undefined);
+const [start, ...groups] = sections;
 ---
 <header class="site-header">
   <div class="site-header__inner">
-    <div class="site-header__top">
-      <a class="site-title" href="/">
-        <img src="/favicon.svg" alt="" width="32" height="32">
-        <span class="site-title__name">{site.name}</span>
+    <a class="brand" href="/">
+      <img src="/favicon.svg" alt="" width="34" height="34">
+      <span>{site.name}</span>
+    </a>
+
+    <nav class="primary-nav" aria-label="Site">
+      <ul>
+        {start.pages.map((p) => (
+          <li><a class="nav-link" href={href(p.slug)} aria-current={here(p.slug)}>Understanding</a></li>
+        ))}
+        {groups.map((group) => (
+          <li>
+            <details class:list={["nav-group", { "nav-group--current": group.pages.some((p) => p.slug === current) }]}>
+              <summary>{group.label} <Icon name="chevron" size={16} /></summary>
+              <div class="nav-menu">
+                <p>{group.blurb}</p>
+                <ul>
+                  {group.pages.map((p) => (
+                    <li><a href={href(p.slug)} aria-current={here(p.slug)}><Icon name={p.icon} />{p.label}</a></li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="search-button" type="button" data-search-open hidden aria-label="Search the guide">
+        <Icon name="search" size={18} />
+        <span class="search-button__label">Search</span>
+        <kbd>/</kbd>
+      </button>
+      <a class="urgent-link" href="/warning-signs" aria-current={here("warning-signs")}>
+        <Icon name="siren" size={18} />
+        <span class="urgent-link__label">Warning signs</span>
+        <span class="visually-hidden">(urgent symptoms)</span>
       </a>
-      <p class="site-title__tag">{site.tagline}</p>
-      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <details class="mobile-nav">
+        <summary aria-label="Menu">
+          <Icon name="menu" class="icon-menu" />
+          <Icon name="close" class="icon-close" />
+        </summary>
+        <nav class="mobile-nav__panel" aria-label="Site">
+          <ul>
+            <li><a href="/" aria-current={here("index")}><Icon name="house" />Home</a></li>
+          </ul>
+          {sections.map((section) => (
+            <>
+              <h2>{section.label}</h2>
+              <ul>
+                {section.pages.map((p) => (
+                  <li><a href={href(p.slug)} aria-current={here(p.slug)}><Icon name={p.icon} />{p.label}</a></li>
+                ))}
+              </ul>
+            </>
+          ))}
+        </nav>
+      </details>
     </div>
   </div>
 </header>
-
-<nav class="site-nav" id="site-nav" aria-label="Site">
-  <ul class="site-nav__list">
-    {nav.map((entry) =>
-      "items" in entry ? (
-        <li class="site-nav__item has-dropdown">
-          <button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
-            {entry.label} <span class="dropdown-arrow" aria-hidden="true">▾</span>
-          </button>
-          <ul class="dropdown-menu">
-            {entry.items.map((item) => (
-              <li><a href={item.href} aria-current={here(item.href)}>{item.label}</a></li>
-            ))}
-          </ul>
-        </li>
-      ) : (
-        <li class="site-nav__item"><a href={entry.href} aria-current={here(entry.href)}>{entry.label}</a></li>
-      )
-    )}
-  </ul>
-</nav>

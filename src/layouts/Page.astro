@@ -1,11 +1,14 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
-import { site, href } from "../data/site";
+import { site, href, findPage } from "../data/site";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Sources from "../components/Sources.astro";
 import PageNav from "../components/PageNav.astro";
+import Toc from "../components/Toc.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+import Icon from "../components/Icon.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -15,20 +18,26 @@ interface Props {
 const { entry, headings } = Astro.props;
 const page = entry.data;
 const slug = entry.id;
+const isHome = slug === "index";
 const path = href(slug);
-const url = site.url + path;
+const url = isHome ? site.url + "/" : site.url + path;
 const title = page.headTitle ?? `${page.title} · ${site.name}`;
 const ogDescription = page.ogDescription ?? page.description;
 const twitterDescription = page.twitterDescription ?? ogDescription;
-const ogType = slug === "index" || slug === "404" ? "website" : "article";
-const toc = page.toc ? headings.filter((h) => h.depth === 2) : [];
+const ogType = isHome || slug === "404" ? "website" : "article";
+const showToc = page.toc && headings.some((h) => h.depth === 2);
+const placement = findPage(slug);
+
+const reviewed = page.lastReviewed?.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
+const words = (entry.body ?? "").split(/\s+/).length;
+const minutes = Math.max(1, Math.round(words / 230));
 
 const jsonLd = slug !== "404" && {
   "@context": "https://schema.org",
   "@type": "MedicalWebPage",
   name: page.title,
   description: page.description,
-  url: slug === "index" ? site.url + "/" : url,
+  url,
   inLanguage: "en",
   audience: { "@type": "MedicalAudience", audienceType: "Patient" },
   about: {
@@ -50,9 +59,11 @@ const jsonLd = slug !== "404" && {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content={page.description}>
-  <link rel="canonical" href={slug === "index" ? site.url + "/" : url}>
+  <link rel="canonical" href={url}>
+  <meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f161b" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content={ogType}>
-  <meta property="og:url" content={slug === "index" ? site.url + "/" : url}>
+  <meta property="og:url" content={url}>
   <meta property="og:title" content={title}>
   <meta property="og:description" content={ogDescription}>
   <meta property="og:site_name" content={site.name}>
@@ -66,29 +77,47 @@ const jsonLd = slug !== "404" && {
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <Header current={path} />
+  <Header current={slug} />
 
-  <div class={toc.length ? "page page--with-toc" : "page"}>
-    <main id="main">
-      {/* Pages without a lede (the home page) open with their own <Hero>. */}
-      {page.lede && <h1>{page.heading ?? page.title}</h1>}
-      {page.lede && <p class="lede">{page.lede}</p>}
+  <div class:list={["page", { "page--with-toc": showToc, "page--home": isHome }]}>
+    <main id="main" data-pagefind-body={slug === "404" ? undefined : ""}>
+      {/* Pages without a lede (the home page) open with their own hero. */}
+      {page.lede && (
+        <div class="page-head">
+          <nav class="breadcrumbs" aria-label="Breadcrumb" data-pagefind-ignore>
+            <ol>
+              <li><a href="/">Home</a></li>
+              {placement && <li>{placement.section.label}</li>}
+            </ol>
+          </nav>
+          {placement && (
+            <p class="page-kicker" data-pagefind-ignore>
+              <span class="page-kicker__icon"><Icon name={placement.page.icon} /></span>
+              {placement.section.label}
+            </p>
+          )}
+          <h1 data-pagefind-meta="title">{page.heading ?? page.title}</h1>
+          <p class="lede">{page.lede}</p>
+          {page.sources && (
+            <ul class="page-meta" data-pagefind-ignore>
+              {reviewed && <li><Icon name="reviewed" size={17} /> Reviewed {reviewed}</li>}
+              <li><Icon name="clock" size={17} /> {minutes} min read</li>
+              <li><Icon name="sources" size={17} /> <a href="#sources">{page.sources.items.length} sources</a></li>
+            </ul>
+          )}
+        </div>
+      )}
+      {showToc && <Toc headings={headings} variant="inline" hasSources={!!page.sources} />}
       <slot />
       {page.sources && <Sources {...page.sources} lastReviewed={page.lastReviewed} />}
       <PageNav slug={slug} />
     </main>
 
-    {toc.length > 0 && (
-      <nav class="toc" aria-label="On this page">
-        <h2>On this page</h2>
-        <ul>
-          {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
-        </ul>
-      </nav>
-    )}
+    {showToc && <Toc headings={headings} variant="sidebar" hasSources={!!page.sources} />}
   </div>
 
   <Footer />
+  <SearchDialog />
   <script src="../scripts/site.js"></script>
 </body>
 </html>

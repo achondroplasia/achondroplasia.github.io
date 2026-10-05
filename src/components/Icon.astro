@@ -1,0 +1,33 @@
+---
+/* Decorative line icons (Lucide). Names are listed in IconName in site.ts. */
+import {
+  Dna, Baby, Backpack, GraduationCap, User, Pill, Apple, Smile, Eye, School,
+  Activity, Syringe, House, Briefcase, HeartHandshake, Globe, FlaskConical,
+  ClipboardList, Siren, LibraryBig, BookA, Search, Menu, X, ChevronDown,
+  ArrowRight, ArrowLeft, Info, Lightbulb, TriangleAlert, CircleAlert, Clock,
+  CalendarCheck, BookOpenText, Printer, ListTree,
+} from "@lucide/astro";
+import type { IconName } from "../data/site";
+
+const icons = {
+  dna: Dna, baby: Baby, backpack: Backpack, graduation: GraduationCap, user: User,
+  pill: Pill, apple: Apple, smile: Smile, eye: Eye, school: School,
+  activity: Activity, syringe: Syringe, house: House, briefcase: Briefcase,
+  heart: HeartHandshake, globe: Globe, flask: FlaskConical, clipboard: ClipboardList,
+  siren: Siren, library: LibraryBig, book: BookA,
+  // interface
+  search: Search, menu: Menu, close: X, chevron: ChevronDown, next: ArrowRight,
+  prev: ArrowLeft, info: Info, tip: Lightbulb, caution: TriangleAlert,
+  emergency: CircleAlert, clock: Clock, reviewed: CalendarCheck,
+  sources: BookOpenText, print: Printer, toc: ListTree,
+};
+
+interface Props {
+  name: IconName | keyof typeof icons;
+  size?: number;
+  class?: string;
+}
+const { name, size = 20, class: className } = Astro.props;
+const Component = icons[name as keyof typeof icons];
+---
+<Component size={size} class={className} aria-hidden="true" stroke-width={1.75} />

@@ -1,0 +1,24 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  lede: string;
+}
+const { lede } = Astro.props;
+---
+<div class="home-hero">
+  <div class="home-hero__inner">
+    <ul class="home-hero__badges" aria-label="About this guide">
+      <li>Free &amp; ad-free</li>
+      <li>Plain English</li>
+      <li>Every claim sourced</li>
+    </ul>
+    <h1>A complete guide to <em>achondroplasia</em></h1>
+    <p class="lede">{lede}</p>
+    <button class="home-search" type="button" data-search-open hidden>
+      <Icon name="search" />
+      <span>Search the guide…</span>
+      <kbd>/</kbd>
+    </button>
+  </div>
+</div>

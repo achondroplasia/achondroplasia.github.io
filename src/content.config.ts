@@ -15,6 +15,8 @@ const pages = defineCollection({
     /** Social-card text, when it differs from `description` */
     ogDescription: z.string().optional(),
     twitterDescription: z.string().optional(),
+    /** One-line Markdown blurb for the home-page directory */
+    summary: z.string().optional(),
     keywords: z.string().optional(),
     /** One-sentence summary under the heading */
     lede: z.string().optional(),

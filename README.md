@@ -72,6 +72,7 @@ The frontmatter at the top holds everything that isn't body text:
 title: Treatments & Research          # <title>, social cards
 description: Every achondroplasia…    # search-result snippet
 lede: An honest, complete tour of…    # summary under the heading
+summary: The two approved growth…     # blurb on the home-page directory
 keywords: vosoritide, Voxzogo, …
 lastReviewed: 2026-08-01              # shown as "Content last reviewed: August 2026"
 sources:
@@ -115,9 +116,10 @@ cells or lists inside cells are written as HTML.
 ### Adding a page
 
 1. Create `src/content/pages/<slug>.mdx` with the frontmatter above.
-2. Add it to the header nav, the footer, and the reading order in
-   [`src/data/site.ts`](src/data/site.ts). Previous/next links and the sitemap
-   are generated from there.
+2. Add one entry (slug, label, icon) to the right section in
+   [`src/data/site.ts`](src/data/site.ts). The header menus, mobile menu,
+   footer, home-page directory, breadcrumbs, previous/next links, and
+   search index all pick it up from there.
 
 ## Development
 
@@ -126,9 +128,12 @@ Requires Node 22.12 or newer.
 ```bash
 npm install
 npm run dev           # local server with live reload at http://localhost:4321
-npm run build         # static site into dist/
+npm run build         # static site into dist/, plus the Pagefind search index
 npm run check:links   # after a build: fails on any broken internal link or #anchor
 ```
+
+Search only works on a build (`npm run build && npm run preview`), not in
+`npm run dev`, because the index is generated from the built pages.
 
 Every push to `main` builds the site, checks links, and deploys to GitHub Pages
 through [the workflow](.github/workflows/deploy.yml). Pull requests run the same
