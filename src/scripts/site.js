@@ -35,30 +35,47 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* Desktop groups also open on hover, for mouse users only. Delays follow
-   NN/g and Baymard: ~300 ms before opening filters out pointers that are
-   just passing over the bar, and ~500 ms before closing forgives a
-   diagonal path into the panel. Moving across from an already-open group
-   switches faster. Touch, pen, and keyboard keep click/Enter to open. */
+/* Desktop groups also open on hover, for mouse users only, using "hover
+   intent": rather than a fixed delay, the menu opens as soon as the pointer
+   slows down over the label (people slow down on what they mean to open),
+   while a pointer sweeping across the bar on its way somewhere else opens
+   nothing. A cap makes sure a slowly drifting pointer still gets its menu.
+   Moving across from an already-open group switches almost at once. The
+   ~400 ms close delay forgives a diagonal path into the panel.
+   Touch, pen, and keyboard keep click/Enter to open. */
 const canHover = matchMedia("(hover: hover) and (pointer: fine)");
-const OPEN_DELAY = 300;
-const SWITCH_DELAY = 150;
-const CLOSE_DELAY = 500;
+const INTENT_SAMPLE = 30; // ms between pointer-speed checks
+const INTENT_SPEED = 0.25; // px per ms; slower than this counts as "meant it"
+const OPEN_MAX = 220; // open by now anyway if the pointer is still inside
+const SWITCH_MAX = 90;
+const CLOSE_DELAY = 400;
+
+let pointer = { x: 0, y: 0 };
+addEventListener("pointermove", (e) => (pointer = { x: e.clientX, y: e.clientY }), { passive: true });
 
 for (const group of document.querySelectorAll(".nav-group")) {
   let openTimer;
   let closeTimer;
   const isMouse = (e) => e.pointerType === "mouse" && canHover.matches;
+  const openNow = () => {
+    group.open = true;
+    group.dataset.hovered = "";
+  };
 
   group.addEventListener("pointerenter", (e) => {
     if (!isMouse(e)) return;
     clearTimeout(closeTimer);
     if (group.open) return;
-    const switching = menus.some((m) => m.open);
-    openTimer = setTimeout(() => {
-      group.open = true;
-      group.dataset.hovered = "";
-    }, switching ? SWITCH_DELAY : OPEN_DELAY);
+    const max = menus.some((m) => m.open) ? SWITCH_MAX : OPEN_MAX;
+    const start = performance.now();
+    let last = { x: e.clientX, y: e.clientY };
+    const check = () => {
+      const moved = Math.hypot(pointer.x - last.x, pointer.y - last.y);
+      last = pointer;
+      if (moved / INTENT_SAMPLE < INTENT_SPEED || performance.now() - start >= max) openNow();
+      else openTimer = setTimeout(check, INTENT_SAMPLE);
+    };
+    openTimer = setTimeout(check, INTENT_SAMPLE);
   });
 
   group.addEventListener("pointerleave", (e) => {

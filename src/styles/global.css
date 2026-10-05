@@ -297,7 +297,7 @@ kbd {
   border-radius: var(--radius);
   box-shadow: var(--shadow-l);
   padding: 0.6rem;
-  animation: pop 0.14s ease-out;
+  animation: pop 0.09s ease-out;
 }
 /* Invisible bridge over the gap under the trigger, so the pointer never
    "leaves" the menu on its way down (WCAG 1.4.13: hoverable). */
