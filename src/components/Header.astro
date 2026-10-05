@@ -25,11 +25,19 @@ const [start, ...groups] = sections;
           <li>
             <details class:list={["nav-group", { "nav-group--current": group.pages.some((p) => p.slug === current) }]}>
               <summary>{group.label} <Icon name="chevron" size={16} /></summary>
-              <div class="nav-menu">
-                <p>{group.blurb}</p>
+              <div class:list={["nav-menu", { "nav-menu--wide": group.pages.length > 5 }]}>
+                <p class="nav-menu__blurb">{group.blurb}</p>
                 <ul>
                   {group.pages.map((p) => (
-                    <li><a href={href(p.slug)} aria-current={here(p.slug)}><Icon name={p.icon} />{p.label}</a></li>
+                    <li>
+                      <a href={href(p.slug)} aria-current={here(p.slug)}>
+                        <span class="nav-menu__icon"><Icon name={p.icon} /></span>
+                        <span class="nav-menu__text">
+                          <span class="nav-menu__label">{p.label}</span>
+                          {p.hint && <span class="nav-menu__hint">{p.hint}</span>}
+                        </span>
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </div>

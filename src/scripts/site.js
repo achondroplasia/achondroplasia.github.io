@@ -27,10 +27,76 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   const open = menus.find((m) => m.open);
   if (open) {
+    // Return focus to the trigger only if it was inside the menu; a menu
+    // opened by hover closes without moving focus (WCAG 1.4.13).
+    const hadFocus = open.contains(document.activeElement);
     open.open = false;
-    open.querySelector("summary").focus();
+    if (hadFocus) open.querySelector("summary").focus();
   }
 });
+
+/* Desktop groups also open on hover, for mouse users only. Delays follow
+   NN/g and Baymard: ~300 ms before opening filters out pointers that are
+   just passing over the bar, and ~500 ms before closing forgives a
+   diagonal path into the panel. Moving across from an already-open group
+   switches faster. Touch, pen, and keyboard keep click/Enter to open. */
+const canHover = matchMedia("(hover: hover) and (pointer: fine)");
+const OPEN_DELAY = 300;
+const SWITCH_DELAY = 150;
+const CLOSE_DELAY = 500;
+
+for (const group of document.querySelectorAll(".nav-group")) {
+  let openTimer;
+  let closeTimer;
+  const isMouse = (e) => e.pointerType === "mouse" && canHover.matches;
+
+  group.addEventListener("pointerenter", (e) => {
+    if (!isMouse(e)) return;
+    clearTimeout(closeTimer);
+    if (group.open) return;
+    const switching = menus.some((m) => m.open);
+    openTimer = setTimeout(() => {
+      group.open = true;
+      group.dataset.hovered = "";
+    }, switching ? SWITCH_DELAY : OPEN_DELAY);
+  });
+
+  group.addEventListener("pointerleave", (e) => {
+    if (!isMouse(e)) return;
+    clearTimeout(openTimer);
+    if (group.open && "hovered" in group.dataset) {
+      closeTimer = setTimeout(() => (group.open = false), CLOSE_DELAY);
+    }
+  });
+
+  // Clicking a group that hover already opened pins it open instead of
+  // closing it; a pinned group stays until a click elsewhere or Escape.
+  group.querySelector("summary").addEventListener("click", (e) => {
+    clearTimeout(openTimer);
+    if (group.open && "hovered" in group.dataset) {
+      e.preventDefault();
+      delete group.dataset.hovered;
+    }
+  });
+
+  group.addEventListener("toggle", () => {
+    if (!group.open) {
+      delete group.dataset.hovered;
+      clearTimeout(closeTimer);
+      return;
+    }
+    // Keep the panel inside the viewport on narrower desktop screens.
+    const panel = group.querySelector(".nav-menu");
+    panel.style.translate = "";
+    const overflow = panel.getBoundingClientRect().right - (document.documentElement.clientWidth - 16);
+    if (overflow > 0) panel.style.translate = `${-overflow}px 0`;
+  });
+
+  // Tabbing out of an open group closes it.
+  group.addEventListener("focusout", (e) => {
+    if (e.relatedTarget && !group.contains(e.relatedTarget)) group.open = false;
+  });
+}
 
 /* ---- Current section in "On this page" -------------------------------------- */
 const tocLinks = [...document.querySelectorAll("[data-toc-link]")];
