@@ -266,7 +266,7 @@ kbd {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.45rem 0.75rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 999px;
   color: var(--text);
   font-size: 0.98rem;
@@ -445,14 +445,17 @@ kbd {
   .search-button__label { display: inline; }
   .urgent-link__label { display: inline; }
 }
-@media (min-width: 64rem) {
+/* The full menu bar needs about 76rem; narrower screens (tablets, small
+   laptops) keep the compact header with the Menu drawer. */
+@media (min-width: 76rem) {
   .primary-nav { display: block; }
-  .brand { margin-right: 0.5rem; }
+  .brand { margin-right: 0.5rem; flex: none; } /* full name on desktop; the nav fits beside it */
   .header-actions { margin-left: auto; }
   .mobile-nav { display: none; }
   .search-button kbd { display: inline-block; }
 }
-@media (min-width: 64rem) and (max-width: 74rem) {
+@media (min-width: 76rem) {
+  /* Next to the full menu bar the search button shows its icon and "/" key. */
   .search-button__label { display: none; }
 }
 
