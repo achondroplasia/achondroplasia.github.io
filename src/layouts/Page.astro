@@ -73,6 +73,13 @@ const jsonLd = slug !== "404" && {
   <meta name="twitter:description" content={twitterDescription}>
   <meta name="twitter:image" content={`${site.url}/og-image.jpg`}>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  {/* Apply a saved theme choice before first paint, so pages don't flash. */}
+  <script is:inline>
+    try {
+      const t = localStorage.getItem("theme");
+      if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    } catch {}
+  </script>
   {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd, null, 2)} />}
 </head>
 <body>

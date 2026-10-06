@@ -1,6 +1,8 @@
 /* ==========================================================================
    Achondroplasia Guide — site stylesheet
-   Imported by src/layouts/Page.astro. Light + dark via prefers-color-scheme.
+   Imported by src/layouts/Page.astro. Light + dark follow the system setting
+   unless the reader picks one in the header (html[data-theme], set by the
+   inline script in Page.astro and the theme menu in site.js).
    Content class names (.callout, .card, .grid, .age-band, .facts, .sources…)
    are used directly by the MDX pages; keep them stable.
    ========================================================================== */
@@ -30,6 +32,7 @@
   --border: #e5dfd3;
   --border-strong: #d3cbbb;
   --link: #0a5f6d;
+  --switch-on: #ffffff;
   --focus: #e0761f;
 
   --info-bg: #ebf3fb;     --info-border: #8db6dc;     --info-ink: #1d5687;
@@ -51,8 +54,10 @@
   --gutter: clamp(1rem, 3vw, 2rem);
 }
 
+/* Dark tokens: used when the system is dark (unless the reader chose Light)
+   or when the reader chose Dark. Keep both copies in sync. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0f161b;
     --surface: #162027;
     --surface-2: #1c2931;
@@ -68,6 +73,7 @@
     --border: #283842;
     --border-strong: #375060;
     --link: #74cfdc;
+    --switch-on: #234852;
     --focus: #f3a35b;
 
     --info-bg: #142739;     --info-border: #3e6d96;    --info-ink: #9cc8ef;
@@ -81,6 +87,37 @@
     --shadow-l: 0 12px 40px rgba(0, 0, 0, 0.5);
   }
 }
+:root[data-theme="dark"] {
+  --bg: #0f161b;
+  --surface: #162027;
+  --surface-2: #1c2931;
+  --text: #dbe4e9;
+  --text-soft: #9db0bb;
+  --heading: #f0f5f7;
+  --brand: #5cc3d2;
+  --brand-strong: #8fd9e4;
+  --brand-soft: #143942;
+  --brand-tint: #132a31;
+  --accent: #f0906b;
+  --accent-soft: #3a2219;
+  --border: #283842;
+  --border-strong: #375060;
+  --link: #74cfdc;
+  --switch-on: #234852;
+  --focus: #f3a35b;
+
+  --info-bg: #142739;     --info-border: #3e6d96;    --info-ink: #9cc8ef;
+  --tip-bg: #13291b;      --tip-border: #3f7b51;     --tip-ink: #9ad8aa;
+  --caution-bg: #2e240f;  --caution-border: #93733a; --caution-ink: #ecc77a;
+  --danger-bg: #351817;   --danger-border: #a35650;  --danger-ink: #f5aaa2;
+  --danger: #f07a6c;
+
+  --shadow-s: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-l: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
 
 /* ---- Base ---------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -390,6 +427,105 @@ kbd {
 .urgent-link:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
 .urgent-link__label { display: none; }
 
+/* Theme menu: System / Light / Dark. Hidden until site.js runs. */
+/* Desktop: a small icon button in the header. Below 76rem the choice lives in
+   the Menu drawer instead (.theme-switch), keeping the phone header uncluttered. */
+.theme-menu { position: relative; display: none; }
+.theme-menu > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+  list-style: none;
+}
+.theme-menu > summary::-webkit-details-marker { display: none; }
+.theme-menu > summary:hover,
+.theme-menu[open] > summary { border-color: var(--brand); color: var(--brand-strong); }
+.theme-icon { display: none; }
+.theme-menu[data-choice="system"] .theme-icon--system,
+.theme-menu[data-choice="light"] .theme-icon--light,
+.theme-menu[data-choice="dark"] .theme-icon--dark { display: block; }
+.theme-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 1;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 9.5rem;
+  padding: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-l);
+  animation: pop 0.09s ease-out;
+}
+.theme-menu__panel button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.theme-menu__panel button svg { color: var(--text-soft); }
+.theme-menu__panel button:hover { background: var(--brand-tint); color: var(--brand-strong); }
+.theme-menu__panel button[aria-pressed="true"] { background: var(--brand-soft); color: var(--brand-strong); }
+.theme-menu__panel button[aria-pressed="true"] svg { color: var(--brand); }
+
+/* Menu drawer: a segmented System / Light / Dark switch. */
+.theme-switch[hidden] { display: none; }
+.theme-switch {
+  margin-top: 1.75rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+.theme-switch__options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.theme-switch__options button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem; /* comfortable touch target */
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.theme-switch__options button:hover { color: var(--heading); }
+.theme-switch__options button[aria-pressed="true"] {
+  background: var(--switch-on);
+  color: var(--brand-strong);
+  box-shadow: var(--shadow-s);
+}
+
 /* Mobile navigation: one <details> drawer, also JS-free. */
 .mobile-nav > summary {
   display: flex;
@@ -452,6 +588,7 @@ kbd {
   .brand { margin-right: 0.5rem; flex: none; } /* full name on desktop; the nav fits beside it */
   .header-actions { margin-left: auto; }
   .mobile-nav { display: none; }
+  .theme-menu:not([hidden]) { display: block; }
   .search-button kbd { display: inline-block; }
 }
 @media (min-width: 76rem) {

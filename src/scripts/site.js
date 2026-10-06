@@ -4,7 +4,7 @@
    menu housekeeping, the current-section highlight, search, and print. */
 
 /* ---- Menus ------------------------------------------------------------- */
-const menus = [...document.querySelectorAll(".nav-group, .mobile-nav")];
+const menus = [...document.querySelectorAll(".nav-group, .mobile-nav, .theme-menu")];
 
 const closeMenus = (except) => {
   for (const m of menus) if (m !== except) m.open = false;
@@ -20,7 +20,7 @@ for (const menu of menus) {
 }
 
 document.addEventListener("click", (e) => {
-  if (!e.target.closest(".nav-group, .mobile-nav")) closeMenus();
+  if (!e.target.closest(".nav-group, .mobile-nav, .theme-menu")) closeMenus();
 });
 
 document.addEventListener("keydown", (e) => {
@@ -112,6 +112,53 @@ for (const group of document.querySelectorAll(".nav-group")) {
   // Tabbing out of an open group closes it.
   group.addEventListener("focusout", (e) => {
     if (e.relatedTarget && !group.contains(e.relatedTarget)) group.open = false;
+  });
+}
+
+/* ---- Colour theme --------------------------------------------------------- */
+/* System (the default) follows prefers-color-scheme; Light or Dark is saved
+   and applied as html[data-theme] (early, by the inline script in Page.astro).
+   The choice is offered in the desktop header menu and in the Menu drawer. */
+{
+  const root = document.documentElement;
+  const metas = [...document.querySelectorAll('meta[name="theme-color"]')];
+  const metaModes = metas.map((m) => [m.media, m.media.includes("dark") ? "dark" : "light"]);
+  const themeMenu = document.querySelector(".theme-menu");
+  const labels = { system: "System", light: "Light", dark: "Dark" };
+
+  const applyTheme = (choice) => {
+    if (choice === "system") delete root.dataset.theme;
+    else root.dataset.theme = choice;
+    // Browser chrome colour: a forced theme uses its colour on every system setting.
+    metas.forEach((m, i) => {
+      const [media, mode] = metaModes[i];
+      m.media = choice === "system" ? media : choice === mode ? "all" : "not all";
+    });
+    for (const b of document.querySelectorAll("[data-theme-choice]")) {
+      b.setAttribute("aria-pressed", String(b.dataset.themeChoice === choice));
+    }
+    if (themeMenu) {
+      themeMenu.dataset.choice = choice;
+      themeMenu.querySelector("summary").setAttribute("aria-label", `Colour theme: ${labels[choice]}`);
+    }
+  };
+
+  applyTheme(root.dataset.theme || "system");
+  for (const el of document.querySelectorAll("[data-theme-ui]")) el.hidden = false;
+
+  document.addEventListener("click", (e) => {
+    const button = e.target.closest("[data-theme-choice]");
+    if (!button) return;
+    const choice = button.dataset.themeChoice;
+    applyTheme(choice);
+    try {
+      if (choice === "system") localStorage.removeItem("theme");
+      else localStorage.setItem("theme", choice);
+    } catch {}
+    if (themeMenu?.contains(button)) {
+      themeMenu.open = false;
+      themeMenu.querySelector("summary").focus();
+    }
   });
 }
 

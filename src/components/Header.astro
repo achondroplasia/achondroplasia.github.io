@@ -53,6 +53,18 @@ const [start, ...groups] = sections;
         <span class="search-button__label">Search</span>
         <kbd>/</kbd>
       </button>
+      <details class="theme-menu" data-theme-ui hidden>
+        <summary aria-label="Colour theme">
+          <Icon name="system" size={18} class="theme-icon theme-icon--system" />
+          <Icon name="sun" size={18} class="theme-icon theme-icon--light" />
+          <Icon name="moon" size={18} class="theme-icon theme-icon--dark" />
+        </summary>
+        <div class="theme-menu__panel" role="group" aria-label="Colour theme">
+          <button type="button" data-theme-choice="system" aria-pressed="true"><Icon name="system" size={18} />System</button>
+          <button type="button" data-theme-choice="light" aria-pressed="false"><Icon name="sun" size={18} />Light</button>
+          <button type="button" data-theme-choice="dark" aria-pressed="false"><Icon name="moon" size={18} />Dark</button>
+        </div>
+      </details>
       <a class="urgent-link" href="/warning-signs" aria-current={here("warning-signs")}>
         <Icon name="siren" size={18} />
         <span class="urgent-link__label">Warning signs</span>
@@ -77,6 +89,14 @@ const [start, ...groups] = sections;
               </ul>
             </>
           ))}
+          <div class="theme-switch" data-theme-ui hidden>
+            <h2 id="theme-switch-label">Appearance</h2>
+            <div class="theme-switch__options" role="group" aria-labelledby="theme-switch-label">
+              <button type="button" data-theme-choice="system" aria-pressed="true"><Icon name="system" size={18} />System</button>
+              <button type="button" data-theme-choice="light" aria-pressed="false"><Icon name="sun" size={18} />Light</button>
+              <button type="button" data-theme-choice="dark" aria-pressed="false"><Icon name="moon" size={18} />Dark</button>
+            </div>
+          </div>
         </nav>
       </details>
     </div>
