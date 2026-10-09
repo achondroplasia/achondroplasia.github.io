@@ -1,3 +1,5 @@
+<img src="brand/logo-rounded-512.png" alt="" width="72" height="72">
+
 # Achondroplasia Guide
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)

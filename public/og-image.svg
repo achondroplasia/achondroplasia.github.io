@@ -18,9 +18,9 @@
   <rect width="1200" height="630" fill="url(#sun)"/>
   <g transform="translate(80 80) scale(1.5)">
     <rect width="64" height="64" rx="14" fill="url(#tile)"/>
-    <path d="M32 52 V30" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
-    <path d="M32 34 C32 24 24 20 16 20 C16 30 24 34 32 34 Z" fill="#ffffff"/>
-    <path d="M32 28 C32 18 40 14 48 14 C48 24 40 28 32 28 Z" fill="#f6b400"/>
+    <path d="M30 52 V28 H34 V52 Z" fill="#ffffff"/>
+    <path d="M33 34 C33 24 24 20 16 20 C16 30 24 34 33 34 Z" fill="#ffffff"/>
+    <path d="M31 28 C31 18 40 14 48 14 C48 24 40 28 31 28 Z" fill="#f6b400"/>
     <path d="M20 52 H44" stroke="#cdeef0" stroke-width="4" stroke-linecap="round"/>
   </g>
   <text x="80" y="300" font-family="Fraunces, Georgia, serif" font-size="88" font-weight="600" fill="#0b2e38">Achondroplasia</text>
