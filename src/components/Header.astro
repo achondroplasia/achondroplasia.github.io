@@ -8,12 +8,15 @@ interface Props {
 const { current } = Astro.props;
 const here = (slug: string) => (slug === current ? "page" : undefined);
 const [start, ...groups] = sections;
+// "Achondroplasia" + "Guide": on phones the last word drops to a small label below.
+const nameWords = site.name.split(" ");
+const nameLast = nameWords.pop();
 ---
 <header class="site-header">
   <div class="site-header__inner">
     <a class="brand" href="/">
       <img src="/favicon.svg" alt="" width="34" height="34">
-      <span>{site.name}</span>
+      <span class="brand__name"><span class="brand__first">{nameWords.join(" ")}</span> <span class="brand__last">{nameLast}</span></span>
     </a>
 
     <nav class="primary-nav" aria-label="Site">

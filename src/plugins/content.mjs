@@ -32,16 +32,37 @@ export const externalLinks = defineHastPlugin({
   },
 });
 
-/* Wide tables scroll sideways inside a wrapper instead of the whole page. */
-const wrap = (node, ctx) =>
-  ctx.wrapNode(node, {
-    type: "element",
-    tagName: "div",
-    properties: { className: ["table-wrap"] },
-    children: [],
+/* Wide tables scroll sideways inside a wrapper instead of the whole page.
+   The wrapper is focusable so keyboard users can scroll it too, and is a
+   labelled region named after the section it sits in (names must be unique
+   on a page). A factory, so the heading tracking starts fresh per page. */
+const textOf = (node) =>
+  node.type === "text" ? node.value : (node.children ?? []).map(textOf).join("");
+export const tableWrap = () => {
+  let section = "";
+  const used = new Map();
+  const label = () => {
+    const base = section ? `Table: ${section}` : "Table";
+    const n = (used.get(base) ?? 0) + 1;
+    used.set(base, n);
+    return n > 1 ? `${base} (${n})` : base;
+  };
+  const wrap = (node, ctx) =>
+    ctx.wrapNode(node, {
+      type: "element",
+      tagName: "div",
+      properties: { className: ["table-wrap"], tabIndex: 0, role: "region", ariaLabel: label() },
+      children: [],
+    });
+  return defineHastPlugin({
+    name: "table-wrap",
+    element: {
+      filter: ["h2", "h3", "table"],
+      visit(node, ctx) {
+        if (node.tagName === "table") return wrap(node, ctx);
+        section = textOf(node).replace(ID, "").trim();
+      },
+    },
+    mdxJsxFlowElement: { filter: ["table"], visit: wrap },
   });
-export const tableWrap = defineHastPlugin({
-  name: "table-wrap",
-  element: { filter: ["table"], visit: wrap },
-  mdxJsxFlowElement: { filter: ["table"], visit: wrap },
-});
+};
