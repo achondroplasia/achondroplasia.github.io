@@ -1,15 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#e0f2f7"/>
-      <stop offset="100%" stop-color="#fbfaf7"/>
+    <radialGradient id="teal" cx="0.9" cy="0" r="0.75">
+      <stop offset="0%" stop-color="#cdeef0"/>
+      <stop offset="100%" stop-color="#f7fbfb" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sun" cx="0" cy="1" r="0.6">
+      <stop offset="0%" stop-color="#fff2c7"/>
+      <stop offset="100%" stop-color="#f7fbfb" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#008a9b"/>
+      <stop offset="100%" stop-color="#005866"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-  <rect x="0" y="0" width="8" height="630" fill="#0e7490"/>
-  <text x="80" y="200" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="72" font-weight="700" fill="#16323e">Achondroplasia</text>
-  <text x="80" y="285" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="72" font-weight="700" fill="#0e7490">Guide</text>
-  <text x="80" y="360" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="32" fill="#52606d">A one-stop family resource — from birth onward</text>
-  <text x="80" y="430" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="26" fill="#52606d">Diagnosis · Treatments · Everyday Life · Community</text>
-  <text x="80" y="580" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" fill="#0e7490">achondroplasia.github.io</text>
+  <rect width="1200" height="630" fill="#f7fbfb"/>
+  <rect width="1200" height="630" fill="url(#teal)"/>
+  <rect width="1200" height="630" fill="url(#sun)"/>
+  <g transform="translate(80 80) scale(1.5)">
+    <rect width="64" height="64" rx="14" fill="url(#tile)"/>
+    <path d="M32 52 V30" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M32 34 C32 24 24 20 16 20 C16 30 24 34 32 34 Z" fill="#ffffff"/>
+    <path d="M32 28 C32 18 40 14 48 14 C48 24 40 28 32 28 Z" fill="#f6b400"/>
+    <path d="M20 52 H44" stroke="#cdeef0" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="80" y="300" font-family="Fraunces, Georgia, serif" font-size="88" font-weight="600" fill="#0b2e38">Achondroplasia</text>
+  <text x="80" y="400" font-family="Fraunces, Georgia, serif" font-size="88" font-weight="600" font-style="italic" fill="#007585">Guide</text>
+  <rect x="80" y="418" width="232" height="9" rx="4.5" fill="#f6b400"/>
+  <text x="80" y="500" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="34" fill="#4a5e66">A one-stop family resource, from birth onward</text>
+  <text x="80" y="566" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="600" fill="#007585">achondroplasia.github.io</text>
 </svg>

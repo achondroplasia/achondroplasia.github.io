@@ -17,23 +17,25 @@
     "Segoe UI", Roboto, sans-serif;
   --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
 
-  --bg: #fbf9f5;
+  --bg: #f7fbfb;
   --surface: #ffffff;
-  --surface-2: #f4f0e8;
-  --text: #1f2a33;
-  --text-soft: #56636d;
-  --heading: #12303a;
-  --brand: #0c6b7b;
-  --brand-strong: #08525f;
-  --brand-soft: #e2f0f1;
-  --brand-tint: #f0f7f7;
-  --accent: #b9502b;
-  --accent-soft: #fbece4;
-  --border: #e5dfd3;
-  --border-strong: #d3cbbb;
-  --link: #0a5f6d;
+  --surface-2: #eaf4f4;
+  --text: #17262d;
+  --text-soft: #4a5e66;
+  --heading: #0b2e38;
+  --brand: #007585;
+  --brand-strong: #005866;
+  --brand-soft: #cdeef0;
+  --brand-tint: #e8f7f8;
+  --accent: #8a5300;
+  --accent-fill: #f6b400;
+  --accent-soft: #fff2c7;
+  --on-accent: #2a1d00;
+  --border: #d6e6e8;
+  --border-strong: #bcd3d6;
+  --link: #006a79;
   --switch-on: #ffffff;
-  --focus: #e0761f;
+  --focus: #c25e00;
 
   --info-bg: #ebf3fb;     --info-border: #8db6dc;     --info-ink: #1d5687;
   --tip-bg: #edf7ef;      --tip-border: #8fc79c;      --tip-ink: #23663a;
@@ -58,23 +60,24 @@
    or when the reader chose Dark. Keep both copies in sync. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f161b;
-    --surface: #162027;
-    --surface-2: #1c2931;
-    --text: #dbe4e9;
-    --text-soft: #9db0bb;
-    --heading: #f0f5f7;
-    --brand: #5cc3d2;
-    --brand-strong: #8fd9e4;
-    --brand-soft: #143942;
-    --brand-tint: #132a31;
-    --accent: #f0906b;
-    --accent-soft: #3a2219;
-    --border: #283842;
-    --border-strong: #375060;
-    --link: #74cfdc;
-    --switch-on: #234852;
-    --focus: #f3a35b;
+    --bg: #0a171c;
+    --surface: #102329;
+    --surface-2: #152e35;
+    --text: #d9e8ec;
+    --text-soft: #9fb9c0;
+    --heading: #f2fafb;
+    --brand: #3fcfd9;
+    --brand-strong: #86e6ec;
+    --brand-soft: #0f3d44;
+    --brand-tint: #0e2e34;
+    --accent: #ffd36b;
+    --accent-fill: #ffc83d;
+    --accent-soft: #3a2e0c;
+    --border: #21404a;
+    --border-strong: #2f5560;
+    --link: #5fd9e2;
+    --switch-on: #1a434b;
+    --focus: #ffc83d;
 
     --info-bg: #142739;     --info-border: #3e6d96;    --info-ink: #9cc8ef;
     --tip-bg: #13291b;      --tip-border: #3f7b51;     --tip-ink: #9ad8aa;
@@ -88,23 +91,24 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f161b;
-  --surface: #162027;
-  --surface-2: #1c2931;
-  --text: #dbe4e9;
-  --text-soft: #9db0bb;
-  --heading: #f0f5f7;
-  --brand: #5cc3d2;
-  --brand-strong: #8fd9e4;
-  --brand-soft: #143942;
-  --brand-tint: #132a31;
-  --accent: #f0906b;
-  --accent-soft: #3a2219;
-  --border: #283842;
-  --border-strong: #375060;
-  --link: #74cfdc;
-  --switch-on: #234852;
-  --focus: #f3a35b;
+  --bg: #0a171c;
+  --surface: #102329;
+  --surface-2: #152e35;
+  --text: #d9e8ec;
+  --text-soft: #9fb9c0;
+  --heading: #f2fafb;
+  --brand: #3fcfd9;
+  --brand-strong: #86e6ec;
+  --brand-soft: #0f3d44;
+  --brand-tint: #0e2e34;
+  --accent: #ffd36b;
+  --accent-fill: #ffc83d;
+  --accent-soft: #3a2e0c;
+  --border: #21404a;
+  --border-strong: #2f5560;
+  --link: #5fd9e2;
+  --switch-on: #1a434b;
+  --focus: #ffc83d;
 
   --info-bg: #142739;     --info-border: #3e6d96;    --info-ink: #9cc8ef;
   --tip-bg: #13291b;      --tip-border: #3f7b51;     --tip-ink: #9ad8aa;
@@ -148,6 +152,8 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+::selection { background: color-mix(in srgb, var(--accent-fill) 40%, transparent); }
 
 a { color: var(--link); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
@@ -707,7 +713,8 @@ main > .full { max-width: none; }
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 10px;
-  background: var(--accent-soft);
+  background: var(--accent-fill);
+  color: var(--on-accent);
 }
 
 .lede {
@@ -735,6 +742,12 @@ main > .full { max-width: none; }
 /* Content h2s get a quiet rule above, except the first */
 main h2 { padding-top: 1.75rem; border-top: 1px solid var(--border); }
 .page-head + h2, .toc-mobile + h2, main > h2:first-child { border-top: none; padding-top: 0; margin-top: 1rem; }
+/* A short marigold mark sits on the rule above each section heading. */
+main > h2:not(:first-child) {
+  background: linear-gradient(var(--accent-fill), var(--accent-fill)) left top / 2.5rem 3px no-repeat;
+  background-origin: border-box;
+}
+.page-head + h2, .toc-mobile + h2, .page--home main > h2 { background: none; }
 
 /* ---- On this page ----------------------------------------------------------------- */
 .toc {
@@ -773,7 +786,7 @@ main h2 { padding-top: 1.75rem; border-top: 1px solid var(--border); }
   transition: color 0.15s, border-color 0.15s;
 }
 .toc a:hover { color: var(--heading); border-left-color: var(--border-strong); }
-.toc a[aria-current="true"] { color: var(--brand-strong); border-left-color: var(--brand); font-weight: 700; }
+.toc a[aria-current="true"] { color: var(--brand-strong); border-left-color: var(--accent-fill); font-weight: 700; }
 .toc__actions { margin-top: 1.25rem; padding-left: 0.9rem; display: grid; gap: 0.5rem; }
 .toc__actions a, .toc__actions button {
   display: inline-flex;
@@ -1112,7 +1125,14 @@ td > :first-child { margin-top: 0; }
   color: var(--text-soft);
 }
 .home-hero h1 { font-size: clamp(2.5rem, 1.6rem + 4vw, 4.25rem); line-height: 1.05; margin-bottom: 1.25rem; }
-.home-hero h1 em { font-style: italic; color: var(--brand); }
+.home-hero h1 em {
+  font-style: italic;
+  color: var(--brand);
+  text-decoration: underline var(--accent-fill);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.14em;
+  text-decoration-skip-ink: none;
+}
 .home-hero .lede { font-size: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem); max-width: 40rem; }
 .home-search {
   display: flex;
@@ -1169,6 +1189,8 @@ td > :first-child { margin-top: 0; }
   background: var(--brand-soft);
   color: var(--brand-strong);
 }
+/* Every other path gets the marigold accent, so the grid isn't one flat colour. */
+.paths li:nth-child(even) .path:not(.path--urgent) .path__icon { background: var(--accent-soft); color: var(--accent); }
 .path__text { flex: 1; display: grid; gap: 0.1rem; }
 .path__label { font-weight: 700; font-size: 1.05rem; line-height: 1.3; }
 .path__detail { font-size: 0.9rem; color: var(--text-soft); line-height: 1.4; }

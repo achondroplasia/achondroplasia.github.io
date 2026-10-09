@@ -60,8 +60,8 @@ const jsonLd = slug !== "404" && {
   <title>{title}</title>
   <meta name="description" content={page.description}>
   <link rel="canonical" href={url}>
-  <meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0f161b" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7fbfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a171c" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content={ogType}>
   <meta property="og:url" content={url}>
   <meta property="og:title" content={title}>
@@ -73,6 +73,7 @@ const jsonLd = slug !== "404" && {
   <meta name="twitter:description" content={twitterDescription}>
   <meta name="twitter:image" content={`${site.url}/og-image.jpg`}>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   {/* Apply a saved theme choice before first paint, so pages don't flash. */}
   <script is:inline>
     try {
