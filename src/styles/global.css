@@ -765,7 +765,7 @@ main > h2:not(:first-child) {
   background: linear-gradient(var(--accent-fill), var(--accent-fill)) left top / 2.5rem 3px no-repeat;
   background-origin: border-box;
 }
-.page-head + h2, .toc-mobile + h2, .page--home main > h2 { background: none; }
+main > .page-head + h2, main > .toc-mobile + h2, .page--home main > h2 { background: none; }
 
 /* ---- On this page ----------------------------------------------------------------- */
 .toc {
