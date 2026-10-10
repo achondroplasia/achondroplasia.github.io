@@ -1471,6 +1471,16 @@ td > :first-child { margin-top: 0; }
 .posture__cart { fill: none; stroke: var(--text-soft); stroke-width: 3; stroke-linejoin: round; }
 .posture__wheel { fill: var(--text-soft); }
 
+/* Ear tube drawing */
+.ear svg { max-width: 17rem; }
+.ear__canal { fill: var(--surface-2); stroke: var(--text-soft); stroke-width: 2; }
+.ear__drum { stroke: var(--text); stroke-width: 3; stroke-linecap: round; }
+.ear__middle { fill: var(--surface); stroke: var(--text-soft); stroke-width: 2.5; }
+.ear__fluid { fill: var(--info-border); }
+.ear__tube { fill: none; stroke: var(--brand-strong); stroke-width: 7; stroke-linecap: round; }
+.ear__throat { fill: var(--surface-2); stroke: var(--text-soft); stroke-width: 2; }
+.figure svg .ear__label { font-size: 12px; fill: var(--text-soft); }
+
 /* ---- Sources & page end -------------------------------------------------------------- */
 .sources {
   margin-top: 4rem;

@@ -1,0 +1,46 @@
+---
+import Figure from "./Figure.astro";
+
+/* Why middle-ear fluid builds up: the eustachian tube (middle ear to the
+   back of the throat) is short and nearly horizontal in achondroplasia, so
+   it drains poorly. Simplified side views, not to scale. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const PANELS = [
+  { title: "Typical", text: "A longer tube that slopes downward, so the middle ear drains well.", tube: "M100,78 C120,92 140,112 166,126", throat: [158, 118], fluid: false },
+  { title: "Achondroplasia", text: "A short, nearly flat tube that drains poorly, so fluid collects behind the eardrum.", tube: "M100,76 C114,80 128,84 142,88", throat: [134, 80], fluid: true },
+];
+---
+<Figure
+  caption={caption}
+  credit="Original drawing for this guide, based on the description on this page (International Consensus Statement, 2022). Simplified side view; not to scale."
+>
+  <div class="eyes-pair">
+    {PANELS.map((p, i) => (
+      <div class={`eyes ear ${p.fluid ? "eyes--danger" : ""}`}>
+        <svg viewBox="0 0 230 150" role="img" aria-label={`${p.title}: ${p.text}`}>
+          <rect class="ear__canal" x="8" y="58" width="52" height="16" rx="4" />
+          <path class="ear__drum" d="M62,50 V82" />
+          <ellipse class="ear__middle" cx="82" cy="66" rx="20" ry="22" />
+          {p.fluid && <path class="ear__fluid" d="M62.5,70 H101.5 A20,22 0 0 1 62.5,70 Z" />}
+          <path class="ear__tube" d={p.tube} />
+          <rect class="ear__throat" x={p.throat[0]} y={p.throat[1]} width="56" height="24" rx="10" />
+          {i === 0 && (
+            <g>
+              <text class="ear__label" x="34" y="50" text-anchor="middle">ear canal</text>
+              <text class="ear__label" x="82" y="104" text-anchor="middle">middle ear</text>
+              <text class="ear__label" x="150" y="96" text-anchor="end">tube</text>
+              <text class="ear__label" x="186" y="112" text-anchor="middle">throat</text>
+            </g>
+          )}
+          {p.fluid && <text class="ear__label" x="82" y="104" text-anchor="middle">fluid</text>}
+        </svg>
+        <p class="eyes__title">{p.title}</p>
+        <p class="eyes__text">{p.text}</p>
+      </div>
+    ))}
+  </div>
+</Figure>

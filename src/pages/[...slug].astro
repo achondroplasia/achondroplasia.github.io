@@ -36,6 +36,7 @@ import Intervals from "../components/Intervals.astro";
 import LineChart from "../components/LineChart.astro";
 import SettingSun from "../components/SettingSun.astro";
 import StenosisPosture from "../components/StenosisPosture.astro";
+import EarTube from "../components/EarTube.astro";
 
 export async function getStaticPaths() {
   const pages = await getCollection("pages");
@@ -47,7 +48,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, HomeHero, HomeIntro, StartPaths, Directory, Figure, GrowthChart, GrowthBrake, PeopleArray, InheritanceChances, CareTimeline, AfmsLadder, UrgencyLadder, TrialResults, MilestoneRanges, SafeSeating, SpinalCanal, GuidedGrowth, LimbLengthening, DiagnosisRoutes, ComplicationRates, Steps, Cards, Bars, Heatmap, Intervals, LineChart, SettingSun, StenosisPosture };
+const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, HomeHero, HomeIntro, StartPaths, Directory, Figure, GrowthChart, GrowthBrake, PeopleArray, InheritanceChances, CareTimeline, AfmsLadder, UrgencyLadder, TrialResults, MilestoneRanges, SafeSeating, SpinalCanal, GuidedGrowth, LimbLengthening, DiagnosisRoutes, ComplicationRates, Steps, Cards, Bars, Heatmap, Intervals, LineChart, SettingSun, StenosisPosture, EarTube };
 ---
 <Page entry={entry} headings={headings}>
   <Content components={components} />
