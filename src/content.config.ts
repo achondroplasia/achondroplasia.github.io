@@ -22,6 +22,8 @@ const pages = defineCollection({
     lede: z.string().optional(),
     /** Date the medical content was last checked against its sources */
     lastReviewed: z.coerce.date().optional(),
+    /** Date the page first went live */
+    published: z.coerce.date().optional(),
     /** Show the "On this page" sidebar (built from the ## headings) */
     toc: z.boolean().default(true),
     sources: z
