@@ -205,10 +205,14 @@ if (dialog) {
   let pagefind;
   let latest = 0;
 
+  const loadPagefind = () => (pagefind ??= import(/* @vite-ignore */ "/pagefind/pagefind.js"));
+
   const openSearch = () => {
     closeMenus();
     if (!dialog.open) dialog.showModal();
     input.select();
+    // Start fetching the index now, so the first search doesn't wait for it.
+    loadPagefind().catch(() => {});
   };
 
   for (const b of document.querySelectorAll("[data-search-open]")) {
@@ -233,6 +237,14 @@ if (dialog) {
   // Pagefind reports built file paths; the site serves them without ".html".
   const clean = (url) => url.replace(/\.html(?=#|$)/, "").replace(/^\/index(?=#|$)/, "/");
 
+  // The query rides along as ?q= so the page it opens can mark the matches.
+  const link = (url, query) => {
+    const [path, hash] = clean(url).split("#");
+    return `${path}?q=${encodeURIComponent(query)}${hash ? `#${hash}` : ""}`;
+  };
+  // Pagefind lists a page's sections in page order; rank them by how well they match.
+  const score = (s) => (s.weighted_locations || []).reduce((sum, l) => sum + l.balanced_score, 0);
+
   const render = (items, query) => {
     if (!items.length) {
       results.innerHTML = `<p class="search-dialog__status">No pages mention “${escape(query)}”. Try a simpler word, or browse the <a href="/glossary">glossary</a>.</p>`;
@@ -242,15 +254,20 @@ if (dialog) {
       "<ol>" +
       items
         .map((r) => {
-          const subs = (r.sub_results || [])
-            .filter((s) => s.url.includes("#"))
+          const sections = (r.sub_results || [])
+            .filter((s) => s.url.includes("#") && !s.url.endsWith("#sources"))
+            .sort((a, b) => score(b) - score(a));
+          // The page result opens the best-matching section; the rest are listed under it.
+          const [best, ...rest] = sections;
+          const subs = rest
             .slice(0, 3)
             .map(
               (s) =>
-                `<li><a class="search-result" href="${clean(s.url)}"><span class="search-result__title">${escape(s.title)}</span><span class="search-result__excerpt">${s.excerpt}</span></a></li>`
+                `<li><a class="search-result" href="${link(s.url, query)}"><span class="search-result__title">${escape(s.title)}</span><span class="search-result__excerpt">${s.excerpt}</span></a></li>`
             )
             .join("");
-          return `<li><a class="search-result" href="${clean(r.url)}"><span class="search-result__title">${escape(r.meta.title || "")}</span><span class="search-result__excerpt">${r.excerpt}</span></a>${subs ? `<ol class="search-subresults">${subs}</ol>` : ""}</li>`;
+          const where = best ? `<span class="search-result__where">${escape(best.title)}</span>` : "";
+          return `<li><a class="search-result" href="${link(best?.url ?? r.url, query)}"><span class="search-result__title">${escape(r.meta.title || "")}</span>${where}<span class="search-result__excerpt">${best?.excerpt ?? r.excerpt}</span></a>${subs ? `<ol class="search-subresults">${subs}</ol>` : ""}</li>`;
         })
         .join("") +
       "</ol>";
@@ -266,12 +283,13 @@ if (dialog) {
         results.innerHTML = initial;
         return;
       }
+      if (!results.querySelector("ol")) results.innerHTML = '<p class="search-dialog__status">Searching…</p>';
       try {
-        pagefind ??= await import(/* @vite-ignore */ "/pagefind/pagefind.js");
-        const search = await pagefind.search(query);
+        const search = await (await loadPagefind()).search(query);
         const items = await Promise.all(search.results.slice(0, 8).map((r) => r.data()));
         if (id === latest) render(items, query);
       } catch {
+        pagefind = undefined; // let the next keystroke retry, e.g. after a dropped connection
         results.innerHTML =
           '<p class="search-dialog__status">Search is unavailable here. (The search index is built with <code>npm run build</code>.)</p>';
       }
@@ -282,4 +300,67 @@ if (dialog) {
   results.addEventListener("click", (e) => {
     if (e.target.closest("a")) dialog.close();
   });
+}
+
+/* ---- Search hits (a result opened with ?q=) ----------------------------------- */
+{
+  const params = new URLSearchParams(location.search);
+  const query = params.get("q");
+  const body = document.querySelector("[data-pagefind-body]");
+  if (query && body) {
+    // Search matches word forms ("study" finds "studies"), so trim common endings
+    // and match any word that starts with what is left.
+    const stems = query
+      .toLowerCase()
+      .split(/[^\p{L}\p{N}]+/u)
+      .filter((w) => w.length > 1)
+      .map((w) => (w.length > 4 ? w.replace(/(ies|es|s|y|ing|ed)$/, "") : w))
+      .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    if (stems.length) {
+      const pattern = new RegExp(`(?<![\\p{L}\\p{N}])(?:${stems.join("|")})[\\p{L}\\p{N}]*`, "giu");
+      const skip = "script, style, svg, mark, nav, .toc-mobile, .page-meta, [data-pagefind-ignore]";
+      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, {
+        acceptNode: (n) =>
+          n.parentElement.closest(skip) || !n.data.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+      });
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+
+      const marks = [];
+      for (const node of nodes) {
+        const text = node.data;
+        pattern.lastIndex = 0;
+        if (!pattern.test(text)) continue;
+        pattern.lastIndex = 0;
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        for (const m of text.matchAll(pattern)) {
+          frag.append(text.slice(last, m.index));
+          const mark = document.createElement("mark");
+          mark.className = "search-hit";
+          mark.textContent = m[0];
+          frag.append(mark);
+          marks.push(mark);
+          last = m.index + m[0].length;
+        }
+        frag.append(text.slice(last));
+        node.replaceWith(frag);
+      }
+
+      // Go to the first match inside the chosen section, or on the page.
+      const section = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      const first =
+        (section && marks.find((m) => section.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING)) ||
+        marks[0];
+      if (first) {
+        for (let d = first.closest("details"); d; d = d.parentElement.closest("details")) d.open = true;
+        first.classList.add("search-hit--current");
+        requestAnimationFrame(() => first.scrollIntoView({ block: "center", behavior: "instant" }));
+      }
+    }
+    // Keep the address clean for sharing and bookmarking.
+    params.delete("q");
+    const rest = params.toString();
+    history.replaceState(history.state, "", location.pathname + (rest ? `?${rest}` : "") + location.hash);
+  }
 }
