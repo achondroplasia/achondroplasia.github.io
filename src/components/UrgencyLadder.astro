@@ -1,0 +1,36 @@
+---
+import Figure from "./Figure.astro";
+import Icon from "./Icon.astro";
+
+/* The three urgency tiers as a ladder, with the "move up a tier" rule drawn
+   as an arrow beside it. Tier colours match the callouts below; the tier
+   number, icon and words carry the meaning too. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const TIERS = [
+  { n: 1, type: "emergency", when: "Minutes count", action: "Call emergency services now" },
+  { n: 2, type: "caution", when: "Today", action: "Contact your care team the same day" },
+  { n: 3, type: "info", when: "Next appointment", action: "Write it down and raise it at the next visit" },
+] as const;
+---
+<Figure caption={caption}>
+  <div class="urgency">
+    <div class="urgency__arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 100" preserveAspectRatio="none"><path d="M12,98 V8" /><path d="M4,14 L12,3 L20,14" /></svg>
+      <span>Not sure? Move up</span>
+    </div>
+    <ol class="urgency__tiers">
+      {TIERS.map((t) => (
+        <li class={`urgency__tier urgency__tier--${t.type}`}>
+          <span class="urgency__badge"><Icon name={t.type} size={18} /> Tier {t.n}</span>
+          <span class="urgency__when">{t.when}</span>
+          <span class="urgency__action">{t.action}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+  <p class="visually-hidden">If you are not sure which tier a sign belongs to, treat it as the tier above.</p>
+</Figure>

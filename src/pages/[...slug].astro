@@ -17,6 +17,9 @@ import GrowthChart from "../components/GrowthChart.astro";
 import GrowthBrake from "../components/GrowthBrake.astro";
 import PeopleArray from "../components/PeopleArray.astro";
 import InheritanceChances from "../components/InheritanceChances.astro";
+import CareTimeline from "../components/CareTimeline.astro";
+import AfmsLadder from "../components/AfmsLadder.astro";
+import UrgencyLadder from "../components/UrgencyLadder.astro";
 
 export async function getStaticPaths() {
   const pages = await getCollection("pages");
@@ -28,7 +31,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, HomeHero, HomeIntro, StartPaths, Directory, Figure, GrowthChart, GrowthBrake, PeopleArray, InheritanceChances };
+const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, HomeHero, HomeIntro, StartPaths, Directory, Figure, GrowthChart, GrowthBrake, PeopleArray, InheritanceChances, CareTimeline, AfmsLadder, UrgencyLadder };
 ---
 <Page entry={entry} headings={headings}>
   <Content components={components} />

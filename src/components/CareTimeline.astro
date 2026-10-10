@@ -1,0 +1,60 @@
+---
+import Figure from "./Figure.astro";
+
+/* The master schedule as a picture: for each check and life stage, whether
+   it is done for everyone or only when symptoms appear. A real table, so
+   screen readers get the same grid; the pills carry hidden words. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+type Cell = "all" | "symptoms" | "none";
+const STAGES = ["0–2 years", "2–12 years", "13–18 years", "Adults"];
+const ROWS: [string, Cell[]][] = [
+  ["Neurologic exam", ["all", "all", "all", "all"]],
+  ["Growth and weight on achondroplasia charts", ["all", "all", "all", "all"]],
+  ["Hearing tests", ["all", "all", "all", "symptoms"]],
+  ["Dental and orthodontic checks", ["all", "all", "all", "all"]],
+  ["Spine and leg (orthopedic) review", ["all", "all", "symptoms", "symptoms"]],
+  ["Sleep study", ["all", "symptoms", "symptoms", "symptoms"]],
+  ["Skull-base and brain MRI", ["all", "symptoms", "symptoms", "symptoms"]],
+  ["Pain (and mood from the teens)", ["none", "all", "all", "all"]],
+  ["Blood pressure", ["none", "none", "none", "all"]],
+];
+const WORDS: Record<Cell, string> = {
+  all: "Routine for everyone",
+  symptoms: "Only if symptoms or signs",
+  none: "Not a set check",
+};
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide, summarizing the master schedule table below (AAP 2020, International Consensus 2022, European Achondroplasia Forum and UK 2026 guidelines). The table gives the timing for each check."
+>
+  <div class="table-wrap timeline-wrap" tabindex="0" role="region" aria-label="Table: Lifetime care at a glance">
+    <table class="timeline">
+      <caption class="visually-hidden">Which checks are routine for everyone, and which happen only if symptoms appear, at each life stage</caption>
+      <thead>
+        <tr>
+          <th scope="col"><span class="visually-hidden">Check</span></th>
+          {STAGES.map((s) => <th scope="col">{s}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {ROWS.map(([check, cells]) => (
+          <tr>
+            <th scope="row">{check}</th>
+            {cells.map((c) => (
+              <td><span class={`timeline__pill timeline__pill--${c}`}><span class="visually-hidden">{WORDS[c]}</span></span></td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <ul class="timeline__legend">
+    <li><span class="timeline__pill timeline__pill--all" aria-hidden="true"></span> Routine for everyone</li>
+    <li><span class="timeline__pill timeline__pill--symptoms" aria-hidden="true"></span> Only if symptoms or signs appear</li>
+  </ul>
+</Figure>

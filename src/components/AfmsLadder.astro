@@ -1,0 +1,49 @@
+---
+import Figure from "./Figure.astro";
+
+/* The Achondroplasia Foramen Magnum Score as a 0–4 ladder. Each step has a
+   schematic cross-section (bony canal, fluid cushion, spinal cord), what the
+   score means, and what usually happens next. Text stays in HTML so it
+   reads at full size on phones. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+/* canal and cord: [rx, ry] of the bony canal and the cord; mark: signal change */
+const STEPS = [
+  { score: 0, canal: [32, 32], cord: [16, 16], mark: false, meaning: "No narrowing.", next: "Monitoring continues as your care team planned." },
+  { score: 1, canal: [24, 24], cord: [16, 16], mark: false, meaning: "Narrowed, but the cushion of spinal fluid around the cord is still there.", next: "Monitoring continues as your care team planned." },
+  { score: 2, canal: [18, 18], cord: [16, 16], mark: false, meaning: "The fluid cushion is gone, but the cord keeps its round shape.", next: "Monitoring continues as your care team planned." },
+  { score: 3, canal: [19, 12], cord: [17.5, 10.5], mark: false, meaning: "The upper cord is flattened, with no change in the cord tissue itself.", next: "Closer monitoring and a repeat MRI within 6–12 months." },
+  { score: 4, canal: [19, 12], cord: [17.5, 10.5], mark: true, meaning: "The cord shows a signal change on the scan: a sign it is being affected.", next: "A discussion about decompression surgery." },
+];
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide. Scores from the Achondroplasia Foramen Magnum Score (Cheung et al., *Archives of Disease in Childhood*, 2021); next steps as described in the 2026 UK consensus. The drawings are simplified cross-sections, not MRI images."
+>
+  <ol class="ladder">
+    {STEPS.map((s) => (
+      <li class={`ladder__step${s.score >= 3 ? " ladder__step--act" : ""}`}>
+        <svg class="ladder__art" viewBox="0 0 72 72" aria-hidden="true">
+          <ellipse class="ladder__fluid" cx="36" cy="36" rx={s.canal[0]} ry={s.canal[1]} />
+          <ellipse class="ladder__bone" cx="36" cy="36" rx={s.canal[0]} ry={s.canal[1]} />
+          <ellipse class="ladder__cord" cx="36" cy="36" rx={s.cord[0]} ry={s.cord[1]} />
+          {s.mark && <circle class="ladder__mark" cx="36" cy="36" r="4.5" />}
+        </svg>
+        <span class="ladder__score" aria-hidden="true">{s.score}</span>
+        <div class="ladder__text">
+          <p class="ladder__meaning"><span class="visually-hidden">Score {s.score}: </span>{s.meaning}</p>
+          <p class="ladder__next"><strong>Usually next:</strong> {s.next}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+  <ul class="ladder__legend" aria-hidden="true">
+    <li><svg viewBox="0 0 20 20"><circle class="ladder__bone" cx="10" cy="10" r="8" style="fill:none" /></svg> Bony canal</li>
+    <li><svg viewBox="0 0 20 20"><circle class="ladder__fluid" cx="10" cy="10" r="8" /></svg> Spinal fluid</li>
+    <li><svg viewBox="0 0 20 20"><circle class="ladder__cord" cx="10" cy="10" r="7" /></svg> Spinal cord</li>
+    <li><svg viewBox="0 0 20 20"><circle class="ladder__cord" cx="10" cy="10" r="7" /><circle class="ladder__mark" cx="10" cy="10" r="3" /></svg> Signal change</li>
+  </ul>
+</Figure>
