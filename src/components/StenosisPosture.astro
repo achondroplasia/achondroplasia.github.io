@@ -1,0 +1,47 @@
+---
+import Figure from "./Figure.astro";
+
+/* The classic spinal stenosis pattern in three simple pictograms: symptoms
+   when walking upright, relief when leaning forward (the shopping-cart
+   sign), and the different pattern of circulation problems. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+---
+<Figure
+  caption={caption}
+  credit="Original drawing for this guide, based on the description on this page. Simple pictograms, not to scale."
+>
+  <div class="posture-trio">
+    <div class="posture posture--caution">
+      <svg viewBox="0 0 160 176" role="img" aria-label="A person walking upright, with pain marks at the legs.">
+        <circle class="posture__head" cx="80" cy="26" r="13" />
+        <path class="posture__body" d="M80,44 V100 M80,58 L66,88 M80,58 L94,86 M80,100 L64,160 M80,100 L98,158" />
+        <path class="posture__pain" d="M106,112 l8,6 l-8,6 l8,6 l-8,6" />
+        <path class="posture__pain" d="M50,120 l-8,6 l8,6 l-8,6" />
+      </svg>
+      <p class="posture__title">Walking or standing</p>
+      <p class="posture__text">Aching, burning, numbness or heaviness in the buttocks and legs comes on.</p>
+    </div>
+    <div class="posture posture--tip">
+      <svg viewBox="0 0 160 176" role="img" aria-label="A person leaning forward onto a shopping cart handle.">
+        <circle class="posture__head" cx="96" cy="46" r="13" />
+        <path class="posture__body" d="M66,104 L86,62 M86,64 L106,86 M66,104 L56,160 M66,104 L80,160" />
+        <path class="posture__cart" d="M106,86 L114,92 H152 L146,128 H118 Z" />
+        <circle class="posture__wheel" cx="124" cy="140" r="6" />
+        <circle class="posture__wheel" cx="144" cy="140" r="6" />
+      </svg>
+      <p class="posture__title">Leaning forward or sitting</p>
+      <p class="posture__text">Symptoms ease, because bending forward opens the spinal canal: the "shopping-cart sign".</p>
+    </div>
+    <div class="posture posture--info">
+      <svg viewBox="0 0 160 176" role="img" aria-label="A person standing still, upright.">
+        <circle class="posture__head" cx="80" cy="26" r="13" />
+        <path class="posture__body" d="M80,44 V100 M80,58 L70,96 M80,58 L90,96 M80,100 L72,162 M80,100 L88,162" />
+      </svg>
+      <p class="posture__title">Different pattern: eased by standing still</p>
+      <p class="posture__text">Leg pain on walking that eases just by stopping, without bending, suggests a circulation problem instead. Tell your doctor which one fits.</p>
+    </div>
+  </div>
+</Figure>

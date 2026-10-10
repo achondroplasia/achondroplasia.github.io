@@ -1,0 +1,43 @@
+---
+import Figure from "./Figure.astro";
+import { inlineMarkdown } from "../lib/markdown";
+
+/* A sequence of steps as a figure. Variants:
+   - flow: stacked boxes joined by arrows; a step can have a side branch
+     ("if not → ...") shown beside it on wide screens and below on phones
+   - ladder: numbered rungs, read top to bottom
+   - pipeline: numbered cards that sit side by side on wide screens
+   Text is inline Markdown, so it can carry bold and links. */
+interface Step {
+  title: string;
+  text?: string;
+  branch?: string;
+}
+interface Props {
+  caption: string;
+  credit?: string;
+  steps: Step[];
+  variant?: "flow" | "ladder" | "pipeline";
+  /** A closing note after the last step, e.g. a loop back */
+  end?: string;
+}
+const { caption, credit, steps, variant = "flow", end } = Astro.props;
+const md = (s: string) => inlineMarkdown(s);
+---
+<Figure caption={caption} credit={credit}>
+  <ol class={`steps steps--${variant}`}>
+    {steps.map((s, i) => (
+      <li class="steps__item">
+        <div class="steps__box">
+          {variant !== "flow" && <span class="steps__num" aria-hidden="true">{i + 1}</span>}
+          <div>
+            <p class="steps__title" set:html={md(s.title)} />
+            {s.text && <p class="steps__text" set:html={md(s.text)} />}
+          </div>
+        </div>
+        {s.branch && <p class="steps__branch" set:html={md(s.branch)} />}
+      </li>
+    ))}
+  </ol>
+  {end && <p class="steps__end" set:html={md(end)} />}
+</Figure>

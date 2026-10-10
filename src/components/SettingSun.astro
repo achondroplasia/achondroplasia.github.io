@@ -1,0 +1,45 @@
+---
+import Figure from "./Figure.astro";
+
+/* The "setting-sun" eye sign beside normal eyes: the coloured part of the
+   eye pushed down so a rim of white shows above it. A stylised drawing,
+   never a photo. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const EYE = "M0,30 Q40,0 80,30 Q40,60 0,30 Z";
+const PANELS = [
+  { id: "eyes-normal", title: "Usual position", irisY: 30, text: "The coloured part sits in the middle; the upper lid rests on its top edge.", tone: "neutral" },
+  { id: "eyes-sun", title: "Setting-sun sign", irisY: 44, text: "The eyes are pushed down: a rim of white shows above the coloured part, like a sun setting.", tone: "danger" },
+];
+---
+<Figure
+  caption={caption}
+  credit="Original drawing for this guide, based on the description on this page. Simplified; not a photograph."
+>
+  <div class="eyes-pair">
+    {PANELS.map((p) => (
+      <div class={`eyes eyes--${p.tone}`}>
+        <svg viewBox="0 0 220 80" role="img" aria-label={`${p.title}: ${p.text}`}>
+          <defs>
+            <clipPath id={p.id}><path d={EYE} /></clipPath>
+          </defs>
+          {[20, 120].map((x) => (
+            <g transform={`translate(${x},10)`}>
+              <path class="eyes__white" d={EYE} />
+              <g clip-path={`url(#${p.id})`}>
+                <circle class="eyes__iris" cx="40" cy={p.irisY} r="15" />
+                <circle class="eyes__pupil" cx="40" cy={p.irisY} r="6" />
+              </g>
+              <path class="eyes__lid" d={EYE} />
+            </g>
+          ))}
+        </svg>
+        <p class="eyes__title">{p.title}</p>
+        <p class="eyes__text">{p.text}</p>
+      </div>
+    ))}
+  </div>
+</Figure>

@@ -1,0 +1,56 @@
+---
+import Figure from "./Figure.astro";
+import { inlineMarkdown } from "../lib/markdown";
+
+/* Side-by-side comparison cards. Each card has a title and either labelled
+   rows (the same labels across cards make a comparison) or bullet points.
+   Tone colours the top edge only; the title always says what it is. */
+interface Card {
+  title: string;
+  kicker?: string;
+  tone?: "neutral" | "tip" | "caution" | "info";
+  rows?: [string, string][];
+  points?: string[];
+  /** Points are a chain of causes: draw them with arrows between */
+  chain?: boolean;
+}
+interface Props {
+  caption: string;
+  credit?: string;
+  cards: Card[];
+  /** Minimum card width, so 2 or 4 cards lay out well */
+  min?: string;
+}
+const { caption, credit, cards, min = "14rem" } = Astro.props;
+const md = (s: string) => inlineMarkdown(s);
+---
+<Figure caption={caption} credit={credit}>
+  <div class="cards" style={`--card-min: ${min}`}>
+    {cards.map((c) => (
+      <div class={`cards__card cards__card--${c.tone ?? "neutral"}`}>
+        {c.kicker && <p class="cards__kicker">{c.kicker}</p>}
+        <p class="cards__title" set:html={md(c.title)} />
+        {c.rows && (
+          <dl class="cards__rows">
+            {c.rows.map(([k, v]) => (
+              <div>
+                <dt>{k}</dt>
+                <dd set:html={md(v)} />
+              </div>
+            ))}
+          </dl>
+        )}
+        {c.points && !c.chain && (
+          <ul class="cards__points">
+            {c.points.map((p) => <li set:html={md(p)} />)}
+          </ul>
+        )}
+        {c.points && c.chain && (
+          <ol class="cards__chain">
+            {c.points.map((p) => <li set:html={md(p)} />)}
+          </ol>
+        )}
+      </div>
+    ))}
+  </div>
+</Figure>

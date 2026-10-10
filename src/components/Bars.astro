@@ -1,0 +1,42 @@
+---
+import Figure from "./Figure.astro";
+import { inlineMarkdown } from "../lib/markdown";
+
+/* Simple horizontal bars on one scale, with the value written beside each
+   bar (so nothing depends on reading the bar length). Optional groups. */
+interface Row {
+  label: string;
+  value: number;
+  /** Upper end of a range, drawn lighter */
+  to?: number;
+  /** What to print, e.g. "60%" or "9 years"; defaults to the value + unit */
+  display?: string;
+  /** Lighter bar, e.g. for a comparison row */
+  muted?: boolean;
+}
+interface Props {
+  caption: string;
+  credit?: string;
+  rows: Row[];
+  max?: number;
+  unit?: string;
+  /** Plain-language scale note under the bars */
+  note?: string;
+}
+const { caption, credit, rows, max = 100, unit = "%", note } = Astro.props;
+---
+<Figure caption={caption} credit={credit}>
+  <ul class="hbars">
+    {rows.map((r) => (
+      <li class="hbars__row">
+        <p class="hbars__label" set:html={inlineMarkdown(r.label)} />
+        <div class="hbars__track" aria-hidden="true">
+          <span class={`hbars__bar${r.muted ? " hbars__bar--muted" : ""}`} style={`width: ${Math.min(100, (r.value / max) * 100)}%`}></span>
+          {r.to && <span class="hbars__bar hbars__bar--range" style={`left: ${(r.value / max) * 100}%; width: ${((r.to - r.value) / max) * 100}%`}></span>}
+        </div>
+        <span class="hbars__value">{r.display ?? `${r.value}${unit}`}</span>
+      </li>
+    ))}
+  </ul>
+  {note && <p class="rates__note">{note}</p>}
+</Figure>

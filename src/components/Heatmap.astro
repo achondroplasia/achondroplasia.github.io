@@ -1,0 +1,39 @@
+---
+import Figure from "./Figure.astro";
+
+/* A small shaded table: darker cells mean higher values. A real table with
+   the numbers printed in each cell, so shade is never the only cue.
+   null cells are shown as "too few" (counts too small to report). */
+interface Props {
+  caption: string;
+  credit?: string;
+  columns: string[];
+  rows: { label: string; values: (number | null)[] }[];
+  /** Header for the row labels */
+  corner?: string;
+  unit?: string;
+}
+const { caption, credit, columns, rows, corner = "", unit = "" } = Astro.props;
+const max = Math.max(...rows.flatMap((r) => r.values.filter((v): v is number => v !== null)));
+const level = (v: number) => Math.min(4, Math.floor((v / max) * 5));
+---
+<Figure caption={caption} credit={credit}>
+  <div class="table-wrap heat-wrap" tabindex="0" role="region" aria-label={`Table: ${corner || "values"}`}>
+    <table class="heat">
+      <thead>
+        <tr>
+          <th scope="col">{corner}</th>
+          {columns.map((c) => <th scope="col">{c}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <th scope="row">{r.label}</th>
+            {r.values.map((v) => (v === null ? <td class="heat__na">too few</td> : <td class={`heat__cell heat__cell--${level(v)}`}>{v.toFixed(1)}{unit}</td>))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Figure>

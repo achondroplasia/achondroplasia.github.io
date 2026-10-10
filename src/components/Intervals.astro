@@ -1,0 +1,38 @@
+---
+import Figure from "./Figure.astro";
+
+/* Estimates with their uncertainty: a dot for the estimate and a line for
+   the confidence interval, on one scale. The numbers are printed too. */
+interface Props {
+  caption: string;
+  credit?: string;
+  rows: { label: string; est: number; lo: number; hi: number; display?: string; highlight?: boolean }[];
+  max: number;
+  ticks: number[];
+  axis: string;
+}
+const { caption, credit, rows, max, ticks, axis } = Astro.props;
+const pct = (v: number) => `${(v / max) * 100}%`;
+---
+<Figure caption={caption} credit={credit}>
+  <ul class="ivals">
+    {rows.map((r) => (
+      <li class={`ivals__row${r.highlight ? " ivals__row--hl" : ""}`}>
+        <p class="ivals__label">{r.label}</p>
+        <div class="ivals__track" aria-hidden="true">
+          <span class="ivals__ci" style={`left: ${pct(r.lo)}; width: ${pct(r.hi - r.lo)}`}></span>
+          <span class="ivals__dot" style={`left: ${pct(r.est)}`}></span>
+        </div>
+        <span class="ivals__value">{r.display ?? `${r.est.toFixed(1)} (${r.lo.toFixed(1)}–${r.hi.toFixed(1)})`}</span>
+      </li>
+    ))}
+  </ul>
+  <div class="ivals__row ivals__row--axis" aria-hidden="true">
+    <span></span>
+    <div>
+      <div class="ivals__axis">{ticks.map((v) => <span style={`left: ${pct(v)}`}>{v}</span>)}</div>
+      <p class="bars__axis-title">{axis}</p>
+    </div>
+    <span></span>
+  </div>
+</Figure>

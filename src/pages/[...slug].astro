@@ -28,6 +28,14 @@ import GuidedGrowth from "../components/GuidedGrowth.astro";
 import LimbLengthening from "../components/LimbLengthening.astro";
 import DiagnosisRoutes from "../components/DiagnosisRoutes.astro";
 import ComplicationRates from "../components/ComplicationRates.astro";
+import Steps from "../components/Steps.astro";
+import Cards from "../components/Cards.astro";
+import Bars from "../components/Bars.astro";
+import Heatmap from "../components/Heatmap.astro";
+import Intervals from "../components/Intervals.astro";
+import LineChart from "../components/LineChart.astro";
+import SettingSun from "../components/SettingSun.astro";
+import StenosisPosture from "../components/StenosisPosture.astro";
 
 export async function getStaticPaths() {
   const pages = await getCollection("pages");
@@ -39,7 +47,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, HomeHero, HomeIntro, StartPaths, Directory, Figure, GrowthChart, GrowthBrake, PeopleArray, InheritanceChances, CareTimeline, AfmsLadder, UrgencyLadder, TrialResults, MilestoneRanges, SafeSeating, SpinalCanal, GuidedGrowth, LimbLengthening, DiagnosisRoutes, ComplicationRates };
+const components = { Callout, Grid, Card, LinkCard, AgeBand, Facts, Fact, HomeHero, HomeIntro, StartPaths, Directory, Figure, GrowthChart, GrowthBrake, PeopleArray, InheritanceChances, CareTimeline, AfmsLadder, UrgencyLadder, TrialResults, MilestoneRanges, SafeSeating, SpinalCanal, GuidedGrowth, LimbLengthening, DiagnosisRoutes, ComplicationRates, Steps, Cards, Bars, Heatmap, Intervals, LineChart, SettingSun, StenosisPosture };
 ---
 <Page entry={entry} headings={headings}>
   <Content components={components} />
