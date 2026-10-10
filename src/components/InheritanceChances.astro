@@ -1,0 +1,42 @@
+---
+import Figure from "./Figure.astro";
+import PeopleArray from "./PeopleArray.astro";
+
+/* Chances per pregnancy for the three common parent combinations,
+   as 100-person icon arrays on the same scale. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+const AVG = "average height";
+const ACH = "achondroplasia";
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide. Chances from the AAP 2020 clinical report and GeneReviews; the 1 in 100 for average-height parents is an approximate figure, explained below."
+>
+  <div class="people-grid">
+    <PeopleArray
+      id="inherit-none"
+      title="Both parents average height, after one child with achondroplasia"
+      of="pregnancies"
+      groups={[{ count: 1, kind: "ach", label: ACH }, { count: 99, kind: "avg", label: AVG }]}
+    />
+    <PeopleArray
+      id="inherit-one"
+      title="One parent has achondroplasia"
+      of="pregnancies"
+      groups={[{ count: 50, kind: "ach", label: ACH }, { count: 50, kind: "avg", label: AVG }]}
+    />
+    <PeopleArray
+      id="inherit-both"
+      title="Both parents have achondroplasia"
+      of="pregnancies"
+      groups={[
+        { count: 50, kind: "ach", label: ACH },
+        { count: 25, kind: "homo", label: "two copies (homozygous achondroplasia), which babies usually do not survive" },
+        { count: 25, kind: "avg", label: AVG },
+      ]}
+    />
+  </div>
+</Figure>

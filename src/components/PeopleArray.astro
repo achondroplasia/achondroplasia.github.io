@@ -1,0 +1,50 @@
+---
+/* An icon array: people grouped by outcome (grouped, not scattered, which
+   readers judge more accurately), with a legend giving each count. Kinds
+   differ by fill style as well as colour: outline, solid, or hatched. */
+export type Kind = "avg" | "ach" | "parent" | "homo";
+interface Props {
+  /** Unique on the page (used for the hatch pattern id) */
+  id: string;
+  title?: string;
+  groups: { count: number; kind: Kind; label: string }[];
+  cols?: number;
+  /** Words for the screen-reader summary, e.g. "pregnancies" */
+  of: string;
+}
+const { id, title, groups, cols = 10, of } = Astro.props;
+
+const CW = 24, CH = 30;
+const total = groups.reduce((n, g) => n + g.count, 0);
+const people = groups.flatMap((g) => Array(g.count).fill(g.kind) as Kind[]);
+const rows = Math.ceil(people.length / cols);
+const summary = `Out of ${total} ${of}: ` + groups.map((g) => `${g.count} ${g.label}`).join("; ") + ".";
+const icon = "M5,29 V22 Q5,15 12,15 Q19,15 19,22 V29 Z";
+---
+<div class="people">
+  {title && <p class="people__title">{title}</p>}
+  <svg viewBox={`0 0 ${cols * CW} ${rows * CH}`} role="img" aria-label={summary}>
+    <defs>
+      <pattern id={`${id}-hatch`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="1.6" height="4" class="people__hatch" />
+      </pattern>
+    </defs>
+    {people.map((kind, i) => (
+      <g transform={`translate(${(i % cols) * CW},${Math.floor(i / cols) * CH})`} class={`person person--${kind}`} style={kind === "homo" ? `fill: url(#${id}-hatch)` : undefined}>
+        <circle cx="12" cy="8" r="5" />
+        <path d={icon} />
+      </g>
+    ))}
+  </svg>
+  <ul class="people__legend">
+    {groups.map((g) => (
+      <li>
+        <svg viewBox="0 0 24 30" aria-hidden="true" class={`person person--${g.kind}`} style={g.kind === "homo" ? `fill: url(#${id}-hatch)` : undefined}>
+          <circle cx="12" cy="8" r="5" />
+          <path d={icon} />
+        </svg>
+        <span><strong>{g.count} in {total}</strong> {g.label}</span>
+      </li>
+    ))}
+  </ul>
+</div>

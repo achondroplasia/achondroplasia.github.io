@@ -1,0 +1,29 @@
+---
+import { inlineMarkdown } from "../lib/markdown";
+
+/* A diagram or chart with its key point as the caption, a source line, and
+   an optional text alternative (a description or the numbers as a table)
+   passed in the "details" slot. */
+interface Props {
+  /** The main point, as a full sentence (inline Markdown) */
+  caption: string;
+  /** Where it comes from (inline Markdown) */
+  credit?: string;
+  /** Label for the expandable text alternative */
+  details?: string;
+}
+const { caption, credit, details = "Text description" } = Astro.props;
+---
+<figure class="figure">
+  <div class="figure__art"><slot /></div>
+  <figcaption class="figure__caption">
+    <span set:html={inlineMarkdown(caption)} />
+    {credit && <span class="figure__credit" set:html={inlineMarkdown(credit)} />}
+  </figcaption>
+  {Astro.slots.has("details") && (
+    <details class="figure__details">
+      <summary>{details}</summary>
+      <slot name="details" />
+    </details>
+  )}
+</figure>

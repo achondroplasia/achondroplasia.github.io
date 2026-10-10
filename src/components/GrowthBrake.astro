@@ -1,0 +1,88 @@
+---
+import Figure from "./Figure.astro";
+
+/* The "growth brake": FGFR3 stuck on in a growth-plate cell, and CNP easing
+   it through NPR-B. With `medicines`, numbered markers show where the growth
+   drugs act, explained in a list under the drawing. */
+interface Props {
+  caption: string;
+  medicines?: boolean;
+}
+const { caption, medicines = false } = Astro.props;
+const id = medicines ? "brake-meds" : "brake";
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide, simplified from the growth-plate signalling described in Ornitz & Legeai-Mallet, *Developmental Dynamics* 2017, and the International Consensus Statement, 2022. Not to scale."
+>
+  <svg class="diagram" viewBox="0 0 360 316" role="img" aria-labelledby={`${id}-title ${id}-desc`}>
+    <title id={`${id}-title`}>How the achondroplasia growth brake works{medicines ? ", and where the medicines act" : ""}</title>
+    <desc id={`${id}-desc`}>
+      A growth-plate cartilage cell. Outside the cell, the growth factor FGF binds the FGFR3 receptor in the cell
+      membrane. Inside, FGFR3's switch is stuck on in achondroplasia and sends too much STAT1 and MAPK signal, so
+      growth-plate cells multiply and mature less and the arms, legs and skull base grow less. On the right, the
+      body's own CNP binds a second receptor, NPR-B, which blocks the MAPK signal and eases the brake.
+      {medicines && " Marker 1 is on CNP: vosoritide and navepegritide are long-lasting forms of CNP. Marker 2 is on FGFR3's switch: infigratinib and dabogratinib (TYRA-300) are pills that block it."}
+    </desc>
+    <defs>
+      <marker id={`${id}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 Z" class="dia__arrowhead" />
+      </marker>
+    </defs>
+
+    <text class="dia__zone" x="12" y="20">OUTSIDE THE CELL</text>
+    <circle class="dia__fgf" cx="86" cy="42" r="6" />
+    <circle class="dia__fgf" cx="100" cy="42" r="6" />
+    <text class="dia__label" x="74" y="46" text-anchor="end">FGF</text>
+    <path class="dia__cnp" d="M262,33 L271,42 L262,51 L253,42 Z" />
+    <text class="dia__label" x="278" y="46">CNP</text>
+
+    <rect class="dia__membrane" x="0" y="72" width="360" height="20" />
+    <text class="dia__small" x="180" y="86" text-anchor="middle">Cell membrane</text>
+
+    <rect class="dia__fgfr3" x="83" y="54" width="20" height="66" rx="6" />
+    <text class="dia__label dia__label--strong" x="111" y="64">FGFR3</text>
+    <rect class="dia__nprb" x="252" y="54" width="20" height="66" rx="6" />
+    <text class="dia__label dia__label--strong" x="244" y="64" text-anchor="end">NPR-B</text>
+
+    <text class="dia__zone" x="180" y="112" text-anchor="middle">INSIDE THE CELL</text>
+    <rect class="dia__switch" x="32" y="120" width="122" height="23" rx="5" />
+    <text class="dia__on" x="93" y="136" text-anchor="middle">Switch stuck ON</text>
+
+    <path class="dia__arrow" d="M78,143 L64,176" marker-end={`url(#${id}-arrow)`} />
+    <path class="dia__arrow" d="M110,143 L182,176" marker-end={`url(#${id}-arrow)`} />
+    <rect class="dia__box" x="14" y="178" width="98" height="40" rx="6" />
+    <text class="dia__label dia__label--strong" x="63" y="195" text-anchor="middle">STAT1</text>
+    <text class="dia__small" x="63" y="210" text-anchor="middle">signal</text>
+    <rect class="dia__box" x="136" y="178" width="98" height="40" rx="6" />
+    <text class="dia__label dia__label--strong" x="185" y="195" text-anchor="middle">MAPK</text>
+    <text class="dia__small" x="185" y="210" text-anchor="middle">signal</text>
+
+    <path class="dia__block" d="M262,120 V198 H240" />
+    <path class="dia__block" d="M240,188 V208" />
+    <text class="dia__small" x="270" y="150">Blocks MAPK,</text>
+    <text class="dia__small" x="270" y="166">easing the</text>
+    <text class="dia__small" x="270" y="182">brake</text>
+
+    <path class="dia__arrow" d="M63,218 V250" marker-end={`url(#${id}-arrow)`} />
+    <path class="dia__arrow" d="M185,218 V250" marker-end={`url(#${id}-arrow)`} />
+    <rect class="dia__outcome" x="14" y="252" width="332" height="52" rx="8" />
+    <text class="dia__label dia__label--strong" x="180" y="273" text-anchor="middle">Growth-plate cells multiply and mature less</text>
+    <text class="dia__small" x="180" y="292" text-anchor="middle">so the arms, legs and skull base grow less</text>
+
+    {medicines && (
+      <g>
+        <circle class="dia__badge" cx="332" cy="42" r="11" />
+        <text class="dia__badge-num" x="332" y="47" text-anchor="middle">1</text>
+        <circle class="dia__badge" cx="16" cy="131" r="11" />
+        <text class="dia__badge-num" x="16" y="136" text-anchor="middle">2</text>
+      </g>
+    )}
+  </svg>
+  {medicines && (
+    <ol class="dia-legend">
+      <li><strong>Vosoritide</strong> (daily injection) and <strong>navepegritide</strong> (weekly injection) are long-lasting forms of CNP, so the brake stays eased for longer.</li>
+      <li><strong>Infigratinib</strong> and <strong>dabogratinib (TYRA-300)</strong> are pills, still in trials or under review, that block FGFR3's switch inside the cell, quieting the brake at its source.</li>
+    </ol>
+  )}
+</Figure>

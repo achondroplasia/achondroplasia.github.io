@@ -1,0 +1,133 @@
+---
+import Figure from "./Figure.astro";
+import { growthCurve, PERCENTILES, type Measure, type Percentile, type Point, type Sex } from "../data/growth";
+
+/* Achondroplasia growth curves (CLARITY), boys and girls side by side on the
+   same scale, with the numbers in a table underneath. Drawn at build time. */
+interface Props {
+  measure: Measure;
+  caption: string;
+}
+const { measure, caption } = Astro.props;
+
+const SPEC = {
+  height: {
+    what: "Height (length lying down under age 2)",
+    figs: "Figs. 2–3",
+    x: { min: 0, max: 18, step: 2, label: "Age (years)", unit: "years" },
+    y: { min: 40, max: 140, step: 20, unit: "cm" },
+    rows: [0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+  },
+  head: {
+    what: "Head circumference",
+    figs: "Fig. 8",
+    x: { min: 0, max: 5, step: 1, label: "Age (years)", unit: "years" },
+    y: { min: 30, max: 60, step: 5, unit: "cm" },
+    rows: [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5],
+  },
+  weightForHeight: {
+    what: "Weight for height",
+    figs: "Figs. 6–7",
+    x: { min: 50, max: 135, step: 10, label: "Height (cm)", unit: "cm" },
+    y: { min: 0, max: 80, step: 20, unit: "kg" },
+    rows: [50, 60, 70, 80, 90, 100, 110, 120, 126, 130, 135],
+  },
+}[measure];
+
+const rowLabel = (x: number) =>
+  SPEC.x.unit === "cm" ? `${x} cm` : x === 0 ? "Birth" : x % 1 ? `${x * 12} months` : x === 1 ? "1 year" : `${x} years`;
+
+const SEXES: Sex[] = ["boys", "girls"];
+const curves = Object.fromEntries(SEXES.map((s) => [s, growthCurve(measure, s)])) as Record<Sex, Point[]>;
+
+/* Plot geometry (SVG user units; the SVG scales to its container) */
+const W = 360, H = 280;
+const M = { top: 22, right: 46, bottom: 42, left: 40 };
+const sx = (v: number) => M.left + ((v - SPEC.x.min) / (SPEC.x.max - SPEC.x.min)) * (W - M.left - M.right);
+const sy = (v: number) => H - M.bottom - ((v - SPEC.y.min) / (SPEC.y.max - SPEC.y.min)) * (H - M.top - M.bottom);
+const ticks = ({ min, max, step }: { min: number; max: number; step: number }) =>
+  Array.from({ length: Math.floor((max - min) / step) + 1 }, (_, i) => min + i * step);
+const key = (p: Percentile) => `p${p}` as const;
+const xy = (pt: Point, p: Percentile) => `${sx(pt.x).toFixed(1)},${sy(pt[key(p)]).toFixed(1)}`;
+const line = (pts: Point[], p: Percentile) => "M" + pts.map((pt) => xy(pt, p)).join("L");
+const band = (pts: Point[], hi: Percentile, lo: Percentile) =>
+  line(pts, hi) + "L" + [...pts].reverse().map((pt) => xy(pt, lo)).join("L") + "Z";
+const LINE_CLASS: Record<Percentile, string> = {
+  95: "chart__edge", 75: "chart__quartile", 50: "chart__mid", 25: "chart__quartile", 5: "chart__edge",
+};
+
+/* End-of-line labels, nudged apart so they never overlap */
+function endLabels(pts: Point[]) {
+  const last = pts[pts.length - 1];
+  const ys = PERCENTILES.map((p) => sy(last[key(p)]));
+  for (let i = 1; i < ys.length; i++) ys[i] = Math.max(ys[i], ys[i - 1] + 13);
+  return PERCENTILES.map((p, i) => ({ p, x: sx(last.x) + 5, y: ys[i] }));
+}
+
+const at = (pts: Point[], x: number) => pts.find((pt) => Math.abs(pt.x - x) < 1e-6);
+const fmt = (v: number) => v.toFixed(1);
+const describe = (s: Sex) => {
+  const p = curves[s];
+  const a = p[0], b = p[p.length - 1];
+  const from = SPEC.x.unit === "cm" ? `${a.x} cm` : "birth";
+  return `${SPEC.what} percentile curves for ${s} with achondroplasia, from ${from} to ${b.x} ${SPEC.x.unit}. The 50th percentile rises from ${fmt(a.p50)} to ${fmt(b.p50)} ${SPEC.y.unit}; at the end, the 5th to 95th percentile range is ${fmt(b.p5)} to ${fmt(b.p95)} ${SPEC.y.unit}.`;
+};
+---
+<Figure
+  caption={caption}
+  credit={`Source: CLARITY study of US children with achondroplasia, redrawn from ${SPEC.figs} of Hoover-Fong et al., [*Orphanet Journal of Rare Diseases*, 2021](https://pmc.ncbi.nlm.nih.gov/articles/PMC8697459/) (CC BY 4.0). Lines are the 5th, 25th, 50th, 75th and 95th percentiles. To plot your own child, use the full-size charts in the paper or the AAP 2020 report.`}
+  details="Show the numbers"
+>
+  <div class="chart-pair">
+    {SEXES.map((s) => (
+      <div class="chart">
+        <p class="chart__title">{s === "boys" ? "Boys" : "Girls"}</p>
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={describe(s)}>
+          {ticks(SPEC.y).map((v) => (
+            <g>
+              <line class="chart__grid" x1={M.left} x2={W - M.right} y1={sy(v)} y2={sy(v)} />
+              <text class="chart__tick" x={M.left - 6} y={sy(v)} text-anchor="end" dominant-baseline="middle">{v}</text>
+            </g>
+          ))}
+          {ticks(SPEC.x).map((v) => (
+            <text class="chart__tick" x={sx(v)} y={H - M.bottom + 17} text-anchor="middle">{v}</text>
+          ))}
+          <text class="chart__tick" x={M.left - 6} y={M.top - 10} text-anchor="end">{SPEC.y.unit}</text>
+          <text class="chart__axis-title" x={(M.left + W - M.right) / 2} y={H - 6} text-anchor="middle">{SPEC.x.label}</text>
+          <path class="chart__band" d={band(curves[s], 95, 5)} />
+          <path class="chart__band chart__band--inner" d={band(curves[s], 75, 25)} />
+          {PERCENTILES.map((p) => <path class={LINE_CLASS[p]} d={line(curves[s], p)} />)}
+          {endLabels(curves[s]).map((l) => (
+            <text class={l.p === 50 ? "chart__label chart__label--mid" : "chart__label"} x={l.x} y={l.y} dominant-baseline="middle">{l.p}th</text>
+          ))}
+        </svg>
+      </div>
+    ))}
+  </div>
+  <div slot="details" class="table-wrap" tabindex="0" role="region" aria-label={`Table: ${SPEC.what} percentiles`}>
+    <table>
+      <caption>{SPEC.what} ({SPEC.y.unit}) by percentile</caption>
+      <thead>
+        <tr>
+          <th scope="col" rowspan="2">{SPEC.x.unit === "cm" ? "Height" : "Age"}</th>
+          <th scope="colgroup" colspan="5">Boys</th>
+          <th scope="colgroup" colspan="5">Girls</th>
+        </tr>
+        <tr>
+          {SEXES.map(() => [...PERCENTILES].reverse().map((p) => <th scope="col">{p}th</th>))}
+        </tr>
+      </thead>
+      <tbody>
+        {SPEC.rows.map((x) => (
+          <tr>
+            <th scope="row">{rowLabel(x)}</th>
+            {SEXES.map((s) => {
+              const pt = at(curves[s], x);
+              return [...PERCENTILES].reverse().map((p) => <td>{pt ? fmt(pt[key(p)]) : "–"}</td>);
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Figure>

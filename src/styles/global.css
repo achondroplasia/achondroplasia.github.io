@@ -996,6 +996,112 @@ td > :first-child { margin-top: 0; }
 }
 .fact__label { display: block; margin-top: 0.35rem; font-size: 0.95rem; line-height: 1.5; color: var(--text-soft); }
 
+/* ---- Figures (diagrams and charts) ------------------------------------------------------ */
+.figure {
+  margin: 1.75rem 0;
+  padding: 1.25rem 1.25rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-s);
+}
+.figure__art svg { display: block; width: 100%; height: auto; overflow: visible; }
+@media (max-width: 40rem) {
+  .figure { padding: 1rem 0.75rem 0.85rem; }
+}
+.figure__caption { margin-top: 0.9rem; font-size: 0.97rem; line-height: 1.55; color: var(--text); }
+.figure__caption > :first-child { font-weight: 700; color: var(--heading); }
+.figure__credit { display: block; margin-top: 0.4rem; font-size: 0.86rem; color: var(--text-soft); }
+.figure__details { margin-top: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+.figure__details > summary { cursor: pointer; font-weight: 700; color: var(--link); width: fit-content; }
+.figure__details > summary:hover { text-decoration: underline; }
+.figure__details .table-wrap { margin: 0.75rem 0 0; box-shadow: none; }
+.figure__details td, .figure__details th { padding: 0.45rem 0.7rem; white-space: nowrap; }
+.figure__details > :not(summary):not(.table-wrap) { margin-top: 0.6rem; }
+
+/* Shared SVG text and strokes: diagrams use these classes so they follow the theme */
+.figure svg text { font-family: var(--font-body); fill: var(--text); }
+.chart-pair {
+  display: grid;
+  gap: 1rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+.chart__title { margin: 0 0 0.25rem; font-weight: 700; color: var(--heading); }
+.chart__grid { stroke: var(--border); stroke-width: 1; }
+.figure svg .chart__tick { font-size: 13px; fill: var(--text-soft); }
+.figure svg .chart__axis-title { font-size: 13px; fill: var(--text-soft); }
+.chart__band { fill: var(--brand-tint); }
+.chart__band--inner { fill: var(--brand-soft); }
+.chart__edge { fill: none; stroke: var(--brand); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.chart__quartile { fill: none; stroke: var(--brand); stroke-width: 1; }
+.chart__mid { fill: none; stroke: var(--brand-strong); stroke-width: 2.5; stroke-linejoin: round; }
+.figure svg .chart__label { font-size: 13px; fill: var(--text-soft); }
+.figure svg .chart__label--mid { font-weight: 700; fill: var(--brand-strong); }
+
+/* Explanatory diagrams: narrow viewBox so labels stay legible on phones */
+.figure svg.diagram { max-width: 34rem; margin-inline: auto; }
+.figure svg .dia__zone { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; fill: var(--text-soft); }
+.figure svg .dia__label { font-size: 14px; }
+.figure svg .dia__label--strong { font-weight: 700; fill: var(--heading); }
+.figure svg .dia__small { font-size: 13px; fill: var(--text-soft); }
+.figure svg .dia__on { font-size: 13px; font-weight: 700; fill: var(--on-accent); }
+.figure svg .dia__badge-num { font-size: 13px; font-weight: 700; fill: var(--surface); }
+.dia__membrane { fill: var(--surface-2); stroke: var(--border-strong); stroke-width: 1; }
+.dia__fgf { fill: var(--accent); }
+.dia__fgfr3 { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.dia__switch { fill: var(--accent-fill); }
+.dia__cnp { fill: var(--brand); }
+.dia__nprb { fill: var(--brand-soft); stroke: var(--brand); stroke-width: 1.5; }
+.dia__box { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.5; }
+.dia__outcome { fill: var(--surface-2); stroke: var(--border-strong); stroke-width: 1; }
+.dia__arrow { fill: none; stroke: var(--text-soft); stroke-width: 1.5; }
+.dia__arrowhead { fill: var(--text-soft); }
+.dia__block { fill: none; stroke: var(--brand); stroke-width: 2.5; }
+.dia__badge { fill: var(--heading); }
+.dia-legend { margin: 1rem 0 0; padding: 0; list-style: none; counter-reset: dia; }
+.dia-legend li {
+  counter-increment: dia;
+  position: relative;
+  padding-left: 2.25rem;
+  margin: 0.5rem 0;
+  font-size: 0.97rem;
+  line-height: 1.55;
+}
+.dia-legend li::before {
+  content: counter(dia);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--heading);
+  color: var(--surface);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+}
+
+/* Icon arrays (PeopleArray) */
+.people-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+.people { display: flex; flex-direction: column; }
+.people__title { margin: 0 0 0.6rem; font-weight: 700; color: var(--heading); font-size: 0.97rem; line-height: 1.4; }
+@media (min-width: 40rem) { .people-grid .people__title { min-height: 4.2em; } }
+.people > svg { max-width: 15rem; }
+.people__legend { list-style: none; margin: 0.75rem 0 0; padding: 0; font-size: 0.92rem; line-height: 1.45; }
+.people__legend li { display: flex; gap: 0.5rem; align-items: flex-start; margin: 0.35rem 0; }
+.people__legend svg { width: 1rem; height: 1.25rem; flex: none; margin-top: 0.05rem; }
+.person--avg { fill: none; stroke: var(--text-soft); stroke-width: 1.5; }
+.person--ach { fill: var(--brand-strong); }
+.person--parent { fill: var(--accent); }
+.person--homo { stroke: var(--text); stroke-width: 1.5; }
+.people__hatch { fill: var(--text); }
+
 /* ---- Sources & page end -------------------------------------------------------------- */
 .sources {
   margin-top: 4rem;
@@ -1290,7 +1396,8 @@ td > :first-child { margin-top: 0; }
     print-color-adjust: exact;
     box-shadow: none;
   }
-  .callout { break-inside: avoid; }
+  .callout, .figure { break-inside: avoid; }
+  .figure { box-shadow: none; }
   .callout--emergency { border: 2pt solid #a02c2c; background: #fdeeee; }
   h1, h2, h3, h4 { break-after: avoid; }
   tr, li { break-inside: avoid; }
