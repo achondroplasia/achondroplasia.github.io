@@ -1,0 +1,57 @@
+---
+import Figure from "./Figure.astro";
+
+/* How common the main complications are, by body area and life stage, using
+   the figures quoted elsewhere in this guide. A range is drawn solid to its
+   low end and lighter to its high end. HTML bars, readable on phones. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+type Row = { area: string; what: string; lo: number; hi?: number; label: string; page: string };
+const GROUPS: { title: string; rows: Row[] }[] = [
+  {
+    title: "Children",
+    rows: [
+      { area: "Ears", what: "Repeated middle-ear infections", lo: 80, hi: 90, label: "80–90%", page: "/childhood#ears-hearing-speech" },
+      { area: "Ears", what: "Ear tubes at least once", lo: 50, label: "over half", page: "/childhood#ears-hearing-speech" },
+      { area: "Legs", what: "Bowed legs", lo: 40, hi: 70, label: "40–70%", page: "/childhood#bones-spine" },
+      { area: "Breathing", what: "Obstructive sleep apnea (varies by study)", lo: 30, hi: 70, label: "30–70%", page: "/childhood#sleep" },
+      { area: "Head", what: "Hydrocephalus needing treatment", lo: 0, hi: 5, label: "under 5%", page: "/first-years#big-head" },
+    ],
+  },
+  {
+    title: "Adults",
+    rows: [
+      { area: "Whole body", what: "Pain", lo: 75, label: "75%", page: "/adults#chronic-pain" },
+      { area: "Back", what: "Symptoms of spinal stenosis", lo: 68, label: "68%", page: "/adults#spinal-stenosis" },
+      { area: "Breathing", what: "Obstructive sleep apnea", lo: 59, label: "59%", page: "/adults#sleep-hearing" },
+      { area: "Ears", what: "Hearing loss that matters day to day", lo: 33, hi: 55, label: "33–55%", page: "/adults#sleep-hearing" },
+    ],
+  },
+];
+---
+<Figure
+  caption={caption}
+  credit="Figures as quoted, with their sources, on the linked pages: International Consensus Statement (2022), GeneReviews, the 2026 UK consensus, and Norwegian and US adult studies (Fredwall et al.; Johns Hopkins). Studies measure these differently, so treat them as rough guides."
+>
+  {GROUPS.map((g) => (
+    <div class="rates">
+      <p class="rates__group">{g.title}</p>
+      <ul class="rates__list">
+        {g.rows.map((r) => (
+          <li class="rates__row">
+            <p class="rates__label"><span class="rates__area">{r.area}</span> <a href={r.page}>{r.what}</a></p>
+            <div class="rates__track" aria-hidden="true">
+              <span class="rates__bar" style={`width: ${r.lo}%`}></span>
+              {r.hi && <span class="rates__bar rates__bar--range" style={`left: ${r.lo}%; width: ${r.hi - r.lo}%`}></span>}
+            </div>
+            <span class="rates__value">{r.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+  <p class="rates__note">Bars run from 0 to 100%. A lighter section shows a range between studies.</p>
+</Figure>

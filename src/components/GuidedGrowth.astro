@@ -1,0 +1,61 @@
+---
+import Figure from "./Figure.astro";
+
+/* Bowed legs (genu varum) seen from the front, and how guided growth works:
+   a small plate across the outer side of the growth plate below the knee
+   slows that side, so the inner side catches up and the leg straightens. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide, based on the International Consensus Statement (2022), the AAP 2020 report and the 2026 UK consensus. Simplified front views, not to scale."
+>
+  <div class="legs-pair">
+    <div class="legs">
+      <svg viewBox="0 0 200 190" role="img" aria-label="Legs seen from the front, bowed outward so there is a gap between the knees while the ankles are close together.">
+        <path class="legs__bone" d="M78,16 Q60,52 58,92" />
+        <path class="legs__bone" d="M58,100 Q50,138 84,170" />
+        <path class="legs__bone" d="M122,16 Q140,52 142,92" />
+        <path class="legs__bone" d="M142,100 Q150,138 116,170" />
+        <path class="legs__foot" d="M84,176 h-20" />
+        <path class="legs__foot" d="M116,176 h20" />
+        <path class="legs__gap" d="M68,96 H132" marker-start="url(#legs-arrow)" marker-end="url(#legs-arrow)" />
+        <text class="legs__note" x="100" y="120" text-anchor="middle">gap at</text>
+        <text class="legs__note" x="100" y="134" text-anchor="middle">the knees</text>
+        <defs>
+          <marker id="legs-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="legs__arrowhead" />
+          </marker>
+        </defs>
+      </svg>
+      <p class="legs__title">Bowed legs (genu varum)</p>
+      <p class="legs__text">Common and usually painless in childhood. Mild bowing needs no treatment, and braces don't help.</p>
+    </div>
+    <div class="legs">
+      <svg viewBox="0 0 200 190" role="img" aria-label="Close-up of one knee from the front. A small plate with two screws crosses the outer side of the growth plate below the knee. An arrow on the inner side shows it keeps growing, so the leg slowly straightens.">
+        <rect class="legs__block" x="80" y="8" width="40" height="76" rx="16" />
+        <rect class="legs__block" x="80" y="94" width="40" height="90" rx="16" />
+        <rect class="legs__physis" x="74" y="116" width="52" height="7" rx="2" />
+        <text class="legs__note" x="68" y="123" text-anchor="end">growth plate</text>
+        <rect class="legs__plate" x="122" y="104" width="7" height="32" rx="3" />
+        <circle class="legs__screw" cx="125.5" cy="109" r="2.5" />
+        <circle class="legs__screw" cx="125.5" cy="131" r="2.5" />
+        <text class="legs__note" x="136" y="114">plate holds</text>
+        <text class="legs__note" x="136" y="128">this side</text>
+        <path class="legs__grow" d="M92,162 V130" marker-end="url(#legs-arrow2)" />
+        <text class="legs__note" x="74" y="150" text-anchor="end">this side</text>
+        <text class="legs__note" x="74" y="164" text-anchor="end">keeps growing</text>
+        <defs>
+          <marker id="legs-arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" class="legs__growhead" />
+          </marker>
+        </defs>
+      </svg>
+      <p class="legs__title">Guided growth</p>
+      <p class="legs__text">A small plate across the outer side of the growth plate slows that side, so the leg grows itself straighter over 1–2 years. It only works while the growth plates are open, usually before about age 11–12.</p>
+    </div>
+  </div>
+</Figure>

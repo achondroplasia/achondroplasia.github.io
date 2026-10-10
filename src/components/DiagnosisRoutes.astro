@@ -1,0 +1,54 @@
+---
+import Figure from "./Figure.astro";
+
+/* The three usual routes to a diagnosis, converging on genetic confirmation
+   and referral. HTML lists, so it reads as text and reflows on phones. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const ROUTES = [
+  {
+    title: "A parent has achondroplasia",
+    steps: [
+      "Genetic counseling, ideally before pregnancy",
+      "Testing in pregnancy if wanted: a blood test (NIPT) from about 9–10 weeks, CVS at 11–13 weeks, or amniocentesis from 15 weeks",
+    ],
+  },
+  {
+    title: "Not expected (about 8 in 10 families)",
+    steps: [
+      "The 18–20-week scan is usually normal",
+      "A later scan shows the long bones falling behind, rarely before 24–26 weeks",
+      "This is a suspicion only, until a genetic test confirms it",
+    ],
+  },
+  {
+    title: "Noticed at birth",
+    steps: [
+      "Examination: shorter upper arms and thighs, a large head",
+      "X-rays show the typical pattern",
+    ],
+  },
+];
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide, summarizing this page. Based on the AAP 2020 report, the International Consensus Statement (2022) and GeneReviews."
+>
+  <div class="routes">
+    {ROUTES.map((r) => (
+      <div class="route">
+        <p class="route__title">{r.title}</p>
+        <ol class="route__steps">
+          {r.steps.map((s) => <li>{s}</li>)}
+        </ol>
+      </div>
+    ))}
+  </div>
+  <ol class="route__end">
+    <li><strong>A genetic test of <em>FGFR3</em> confirms it</strong> (it finds about 99% of cases). Sometimes the exam and X-rays are clear enough on their own.</li>
+    <li><strong>Referral</strong> to a skeletal dysplasia center or an experienced clinician, genetic counseling, and an introduction to support groups.</li>
+  </ol>
+</Figure>

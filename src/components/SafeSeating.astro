@@ -1,0 +1,40 @@
+---
+import Figure from "./Figure.astro";
+import Icon from "./Icon.astro";
+
+/* Do and don't for infant seating: a firm back reclined about 30° from
+   upright (Westmead) versus a soft seat that curls the body into a "C"
+   and drops the chin to the chest. Simple side views, not to scale. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+---
+<Figure
+  caption={caption}
+  credit="Original drawing for this guide, based on the AAP 2020 report and the Children's Hospital at Westmead therapy guidelines (2010). Not to scale."
+>
+  <div class="seat-pair">
+    <div class="seat seat--do">
+      <svg viewBox="0 0 220 180" role="img" aria-label="A baby on a firm seat back reclined about 30 degrees from upright, with the back straight and the large head resting against the seat.">
+        <path class="seat__ref" d="M32,43 V150" />
+        <path class="seat__arc" d="M32,91 A48,48 0 0 0 56,84.6" />
+        <text class="seat__angle" x="44" y="112" text-anchor="middle">30°</text>
+        <path class="seat__frame" d="M32,43 L100,160 L188,160" />
+        <path class="seat__limb" d="M104,142 L154,140" />
+        <path class="seat__torso" d="M102,138 L77,93" />
+        <circle class="seat__head" cx="65" cy="67" r="19" />
+      </svg>
+      <p class="seat__label"><Icon name="tip" size={18} /> <span><strong>Yes:</strong> a firm, flat back, reclined about 30° from upright. The back stays straight and the head is supported.</span></p>
+    </div>
+    <div class="seat seat--dont">
+      <svg viewBox="0 0 220 180" role="img" aria-label="A baby in a soft sagging seat, curled into a C shape with the chin dropped onto the chest.">
+        <path class="seat__frame seat__frame--soft" d="M30,52 Q110,215 192,52" />
+        <path class="seat__limb" d="M122,146 L152,116" />
+        <path class="seat__torso" d="M122,146 Q74,140 86,96" />
+        <circle class="seat__head" cx="110" cy="90" r="19" />
+      </svg>
+      <p class="seat__label"><Icon name="caution" size={18} /> <span><strong>No:</strong> slings, soft seats, swings and umbrella strollers that curl the body into a "C" and let the chin drop to the chest.</span></p>
+    </div>
+  </div>
+</Figure>

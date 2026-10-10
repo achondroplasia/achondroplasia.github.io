@@ -1196,6 +1196,155 @@ td > :first-child { margin-top: 0; }
   .urgency__tier { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
+/* Bar and range charts built from HTML (TrialResults, MilestoneRanges) */
+.bars, .ranges { list-style: none; margin: 0; padding: 0; }
+.bars__row { margin: 0 0 1rem; }
+.bars__label, .bars__meta { margin: 0; line-height: 1.4; }
+.bars__label span { color: var(--text-soft); font-size: 0.92rem; }
+.bars__meta { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 0.35rem; }
+.bars__track { display: flex; align-items: center; }
+.bars__area { flex: 1; }
+.bars__bar { display: block; height: 1.4rem; background: var(--brand-strong); border-radius: 0 4px 4px 0; }
+.bars__value { width: 4.5rem; padding-left: 0.5rem; font-weight: 700; font-size: 0.92rem; color: var(--heading); white-space: nowrap; }
+.bars__axis, .ranges__axis {
+  position: relative;
+  height: 1.4rem;
+  border-top: 1px solid var(--border-strong);
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+.bars__axis span, .ranges__axis span { position: absolute; top: 0.15rem; transform: translateX(-50%); }
+.bars__axis span:first-child, .ranges__axis span:first-child { transform: none; }
+.bars__axis span:last-child, .ranges__axis span:last-child { transform: translateX(-100%); }
+.bars__axis-title { margin: 0.1rem 0 0; font-size: 0.85rem; color: var(--text-soft); text-align: center; }
+.bars__axis { margin-right: 4.5rem; }
+
+.ranges__row { display: grid; grid-template-columns: 9rem 1fr; align-items: center; gap: 0.75rem; padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
+.ranges__label { margin: 0; font-size: 0.92rem; line-height: 1.3; }
+.ranges__track { position: relative; height: 1.5rem; }
+.ranges__track .ranges__bar { position: absolute; height: 0.6rem; border-radius: 999px; }
+.ranges__track .ranges__bar--ach { top: 0.1rem; }
+.ranges__track .ranges__bar--avg { top: 0.8rem; }
+.ranges__bar--ach { background: var(--brand-strong); }
+.ranges__bar--avg { background: transparent; border: 2px solid var(--text-soft); }
+.ranges__track .ranges__bar--dot { width: 0.6rem !important; margin-left: -0.3rem; }
+.ranges__axis { margin-left: 9.75rem; }
+.ranges__axis + .bars__axis-title { margin-left: 9.75rem; }
+.ranges__legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; margin: 0.75rem 0 0; padding: 0; font-size: 0.92rem; }
+.ranges__legend li { display: flex; align-items: center; gap: 0.5rem; }
+.ranges__legend .ranges__bar { display: inline-block; width: 2rem; height: 0.6rem; border-radius: 999px; }
+@media (max-width: 30rem) {
+  .ranges__row { grid-template-columns: 6.25rem 1fr; gap: 0.5rem; }
+  .ranges__label { font-size: 0.85rem; }
+  .ranges__axis, .ranges__axis + .bars__axis-title { margin-left: 6.75rem; }
+}
+
+/* Safe seating do / don't drawings */
+.seat-pair { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.seat { border: 1px solid var(--border); border-radius: var(--radius-s); padding: 0.75rem; }
+.seat--do { border-top: 4px solid var(--tip-border); }
+.seat--dont { border-top: 4px solid var(--caution-border); }
+.seat svg { max-width: 16rem; margin-inline: auto; }
+.seat__label { display: flex; gap: 0.5rem; align-items: flex-start; margin: 0.5rem 0 0; font-size: 0.95rem; line-height: 1.5; }
+.seat__label svg { flex: none; margin-top: 0.15rem; }
+.seat--do .seat__label svg { color: var(--tip-ink); }
+.seat--dont .seat__label svg { color: var(--caution-ink); }
+.seat__frame { fill: none; stroke: var(--text-soft); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.seat__frame--soft { stroke-dasharray: 2 7; }
+.seat__ref { fill: none; stroke: var(--border-strong); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.seat__arc { fill: none; stroke: var(--accent); stroke-width: 2; }
+.figure svg .seat__angle { font-size: 13px; font-weight: 700; fill: var(--accent); }
+.seat__torso { fill: none; stroke: var(--brand-strong); stroke-width: 24; stroke-linecap: round; }
+.seat__limb { fill: none; stroke: var(--brand-strong); stroke-width: 13; stroke-linecap: round; }
+.seat__head { fill: var(--brand-strong); stroke: var(--surface); stroke-width: 2; }
+
+/* Spinal canal (adults) */
+.canal-trio { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr)); }
+.canal svg { max-width: 12rem; margin-inline: auto; }
+.canal__title { margin: 0.4rem 0 0; font-weight: 700; color: var(--heading); font-size: 0.95rem; line-height: 1.35; }
+.canal__text { margin: 0.2rem 0 0; font-size: 0.9rem; line-height: 1.45; color: var(--text-soft); }
+.canal__body { fill: var(--surface-2); stroke: var(--text-soft); stroke-width: 2.5; }
+.canal__bone { fill: none; stroke: var(--text-soft); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.canal__space { fill: var(--brand-soft); stroke: none; }
+.canal__nerve { fill: var(--brand-strong); }
+.canal__wear { fill: var(--accent-fill); stroke: var(--accent); stroke-width: 1.5; }
+.canal__legend, .ladder__legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin: 0.9rem 0 0; padding: 0; font-size: 0.9rem; color: var(--text-soft); }
+.canal__legend li { display: flex; align-items: center; gap: 0.4rem; }
+.canal__legend svg { width: 1.1rem; height: 1.1rem; }
+
+/* Bowed legs and guided growth (childhood) */
+.legs-pair { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.legs svg { max-width: 15rem; margin-inline: auto; }
+.legs__title { margin: 0.4rem 0 0; font-weight: 700; color: var(--heading); }
+.legs__text { margin: 0.2rem 0 0; font-size: 0.93rem; line-height: 1.5; color: var(--text-soft); }
+.legs__bone { fill: none; stroke: var(--text-soft); stroke-width: 14; stroke-linecap: round; }
+.legs__block { fill: var(--surface-2); stroke: var(--text-soft); stroke-width: 2.5; }
+.legs__foot { fill: none; stroke: var(--text-soft); stroke-width: 9; stroke-linecap: round; }
+.legs__gap { fill: none; stroke: var(--accent); stroke-width: 2; }
+.legs__arrowhead { fill: var(--accent); }
+.legs__physis { fill: var(--brand-soft); stroke: var(--brand); stroke-width: 1.5; }
+.legs__plate { fill: var(--heading); }
+.legs__screw { fill: var(--surface); }
+.legs__grow { fill: none; stroke: var(--brand-strong); stroke-width: 3; }
+.legs__growhead { fill: var(--brand-strong); }
+.figure svg .legs__note { font-size: 12.5px; fill: var(--text-soft); }
+
+/* Limb lengthening (treatments) */
+.lengthen { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); align-items: start; }
+.lengthen__step svg { width: 5rem; height: 10rem; margin-inline: auto; }
+.lengthen__step p { margin: 0.5rem 0 0; font-size: 0.93rem; line-height: 1.5; text-align: center; }
+.lengthen__step--gains { grid-column: span 1; align-self: center; }
+.lengthen__step--gains p { text-align: left; }
+.lengthen__bone { fill: var(--surface-2); stroke: var(--text-soft); stroke-width: 2.5; }
+.lengthen__cut { fill: none; stroke: var(--danger); stroke-width: 2.5; stroke-linejoin: round; }
+.lengthen__new { fill: var(--brand-soft); stroke: var(--brand); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.lengthen__pull { fill: none; stroke: var(--brand-strong); stroke-width: 2.5; }
+.lengthen__arrowhead { fill: var(--brand-strong); }
+.lengthen__gains { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+.lengthen__gains li { display: grid; grid-template-columns: 1fr; gap: 0.15rem; margin: 0 0 0.6rem; font-size: 0.9rem; }
+.lengthen__gains li { grid-template-columns: 1fr auto; }
+.lengthen__gains li > span:first-child { grid-column: 1 / -1; color: var(--text-soft); }
+.lengthen__gain-bar { display: block; height: 0.8rem; background: var(--brand-strong); border-radius: 0 4px 4px 0; align-self: center; }
+.lengthen__total { font-size: 0.9rem !important; color: var(--text-soft); }
+
+/* Diagnosis routes (understanding) */
+.routes { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }
+.route { border: 1px solid var(--border); border-top: 4px solid var(--brand); border-radius: var(--radius-s); padding: 0.75rem 0.85rem; background: var(--surface); }
+.route__title { margin: 0 0 0.5rem; font-weight: 700; color: var(--heading); font-size: 0.97rem; line-height: 1.35; }
+.route__steps, .route__end { list-style: none; margin: 0; padding: 0; }
+.route__steps li { position: relative; font-size: 0.9rem; line-height: 1.45; padding: 0.45rem 0.6rem; background: var(--surface-2); border-radius: 6px; }
+.route__steps li + li { margin-top: 1.1rem; }
+.route__steps li + li::before, .route__end li::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -0.95rem;
+  border: 0.4rem solid transparent;
+  border-top: 0.55rem solid var(--text-soft);
+  transform: translateX(-50%);
+}
+.route__end { margin-top: 1.25rem; }
+.route__end li { position: relative; padding: 0.7rem 0.9rem; border: 1px solid var(--brand); background: var(--brand-tint); border-radius: var(--radius-s); font-size: 0.95rem; line-height: 1.5; }
+.route__end li + li { margin-top: 1.25rem; }
+.route__end li::before { top: -1.05rem; }
+
+/* Complication rates (checklist) */
+.rates + .rates { margin-top: 1rem; }
+.rates__group { margin: 0 0 0.25rem; font-weight: 700; color: var(--heading); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.06em; }
+.rates__list { list-style: none; margin: 0; padding: 0; }
+.rates__row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 4.75rem; align-items: center; gap: 0.75rem; padding: 0.45rem 0; border-bottom: 1px solid var(--border); }
+.rates__label { margin: 0; font-size: 0.92rem; line-height: 1.35; }
+.rates__area { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+.rates__track { position: relative; height: 0.85rem; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.rates__bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--brand-strong); }
+.rates__bar--range { background: var(--brand); opacity: 0.45; }
+.rates__value { font-weight: 700; font-size: 0.9rem; color: var(--heading); text-align: right; }
+.rates__note { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--text-soft); }
+@media (max-width: 30rem) {
+  .rates__row { grid-template-columns: 1fr 4.5rem; }
+  .rates__label { grid-column: 1 / -1; }
+}
+
 /* ---- Sources & page end -------------------------------------------------------------- */
 .sources {
   margin-top: 4rem;

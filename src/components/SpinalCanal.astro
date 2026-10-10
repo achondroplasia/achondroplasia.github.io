@@ -1,0 +1,72 @@
+---
+import Figure from "./Figure.astro";
+
+/* A lumbar vertebra seen from above, three ways: average height, the
+   narrower canal of achondroplasia (short pedicles set close together), and
+   that canal after ordinary wear and tear (a bulging disc in front, a
+   thickened ligament behind) squeezing the nerves. Schematic, not to scale. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+/* Nerve roots as dots, filling the canal */
+const nerves = (xs: number[], ys: number[]) => ys.flatMap((y) => xs.map((x) => [x, y]));
+const PANELS = [
+  {
+    title: "Average height",
+    text: "Long pedicles leave a roomy canal for the nerves.",
+    arch: "M52,72 L44,104 Q50,128 80,132 Q110,128 116,104 L108,72",
+    canal: "M58,76 L51,104 Q57,121 80,124 Q103,121 109,104 L102,76 Z",
+    spine: "M80,132 V148",
+    nerves: nerves([64, 72, 80, 88, 96], [92, 101, 110]),
+    wear: false,
+  },
+  {
+    title: "Achondroplasia",
+    text: "Short pedicles set close together: the canal is narrow from birth.",
+    arch: "M62,74 L60,92 Q64,108 80,111 Q96,108 100,92 L98,74",
+    canal: "M67,77 L65,92 Q69,103 80,105 Q91,103 95,92 L93,77 Z",
+    spine: "M80,111 V130",
+    nerves: nerves([70, 77, 84, 91], [86, 93, 99]).map(([x, y]) => [x - 0.5, y]),
+    wear: false,
+  },
+  {
+    title: "Achondroplasia with wear and tear",
+    text: "A bulging disc and thicker ligament narrow it further and squeeze the nerves.",
+    arch: "M62,74 L60,92 Q64,108 80,111 Q96,108 100,92 L98,74",
+    canal: "M67,77 L65,92 Q69,103 80,105 Q91,103 95,92 L93,77 Z",
+    spine: "M80,111 V130",
+    nerves: nerves([69, 76, 84, 91], [90, 95]),
+    wear: true,
+  },
+];
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide: a lower-back vertebra seen from above, simplified. Based on the anatomy described on this page and in the International Consensus Statement (2022). Not to scale."
+>
+  <div class="canal-trio">
+    {PANELS.map((p) => (
+      <div class="canal">
+        <svg viewBox="0 0 160 152" role="img" aria-label={`${p.title}: ${p.text}`}>
+          <ellipse class="canal__body" cx="80" cy="44" rx="50" ry="31" />
+          <path class="canal__space" d={p.canal} />
+          <path class="canal__bone" d={p.arch} />
+          <path class="canal__bone" d={p.spine} />
+          {p.wear && <ellipse class="canal__wear" cx="80" cy="81" rx="13" ry="5.5" />}
+          {p.wear && <ellipse class="canal__wear" cx="80" cy="101" rx="11" ry="4" />}
+          {p.nerves.map(([x, y]) => <circle class="canal__nerve" cx={x} cy={y} r="3.2" />)}
+        </svg>
+        <p class="canal__title">{p.title}</p>
+        <p class="canal__text">{p.text}</p>
+      </div>
+    ))}
+  </div>
+  <ul class="canal__legend" aria-hidden="true">
+    <li><svg viewBox="0 0 20 20"><ellipse class="canal__body" cx="10" cy="10" rx="8" ry="6" /></svg> Bone (front: vertebral body)</li>
+    <li><svg viewBox="0 0 20 20"><rect class="canal__space" x="3" y="3" width="14" height="14" rx="3" /></svg> Spinal canal</li>
+    <li><svg viewBox="0 0 20 20"><circle class="canal__nerve" cx="10" cy="10" r="4" /></svg> Nerves</li>
+    <li><svg viewBox="0 0 20 20"><ellipse class="canal__wear" cx="10" cy="10" rx="8" ry="4.5" /></svg> Disc bulge or thickened ligament</li>
+  </ul>
+</Figure>

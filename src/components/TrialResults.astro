@@ -1,0 +1,39 @@
+---
+import Figure from "./Figure.astro";
+
+/* Extra growth per year over placebo in each medicine's pivotal trial.
+   One measure for all three (the trials' main result); HTML bars so the
+   labels stay full size on phones. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const MAX = 2; // cm/yr at the right edge
+const TRIALS = [
+  { drug: "Vosoritide", how: "daily injection", trial: "Phase 3, ages 5–17", status: "Approved (US)", gain: 1.57 },
+  { drug: "Navepegritide", how: "weekly injection", trial: "ApproaCH, ages 2–11", status: "Approved (US)", gain: 1.49 },
+  { drug: "Infigratinib", how: "daily pill", trial: "PROPEL 3, ages 3–17", status: "Under FDA review", gain: 1.74 },
+];
+---
+<Figure
+  caption={caption}
+  credit="Source: the pivotal trials described on this page: Savarirayan et al., *The Lancet* 2020 (vosoritide); *JAMA Pediatrics* 2025 (navepegritide); *New England Journal of Medicine* 2026 (infigratinib). One year of treatment in each."
+>
+  <ul class="bars">
+    {TRIALS.map((t) => (
+      <li class="bars__row">
+        <p class="bars__label"><strong>{t.drug}</strong> <span>({t.how})</span></p>
+        <p class="bars__meta">{t.trial} · {t.status}</p>
+        <div class="bars__track">
+          <span class="bars__area"><span class="bars__bar" style={`width: ${(t.gain / MAX) * 100}%`}></span></span>
+          <span class="bars__value">+{t.gain.toFixed(2)} cm</span>
+        </div>
+      </li>
+    ))}
+  </ul>
+  <div class="bars__axis" aria-hidden="true">
+    {[0, 0.5, 1, 1.5, 2].map((v) => <span style={`left: ${(v / MAX) * 100}%`}>{v}</span>)}
+  </div>
+  <p class="bars__axis-title">Extra growth per year compared with placebo (cm)</p>
+</Figure>

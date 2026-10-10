@@ -1,0 +1,50 @@
+---
+import Figure from "./Figure.astro";
+
+/* Gross-motor milestone windows, achondroplasia vs average stature, from
+   the milestone table on the First years page. A single number ("~6")
+   is drawn as a dot. HTML bars, so labels stay full size on phones. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const MAX = 36; // months
+type Range = [number, number];
+const ROWS: [string, Range, Range][] = [
+  ["Head control", [4, 9], [2, 4]],
+  ["Rolls over", [4, 8], [3, 5]],
+  ["Sits with propping", [5, 9], [4, 6]],
+  ["Sits alone", [9, 14], [6, 6]],
+  ["Crawls (own style)", [9, 14], [8, 10]],
+  ["Pulls to stand", [10, 18], [9, 12]],
+  ["Stands alone", [13, 22], [11, 14]],
+  ["Walks alone", [16, 30], [12, 15]],
+];
+const pos = ([a, b]: Range) => `left: ${(a / MAX) * 100}%; width: ${((b - a) / MAX) * 100}%`;
+const words = ([a, b]: Range) => (a === b ? `about ${a} months` : `about ${a} to ${b} months`);
+---
+<Figure
+  caption={caption}
+  credit="Original chart for this guide, drawn from the milestone table above (AAP 2020 screening chart, Australasian cohort data and Westmead therapy norms). Windows, not deadlines."
+>
+  <ul class="ranges">
+    {ROWS.map(([name, ach, avg]) => (
+      <li class="ranges__row">
+        <p class="ranges__label">{name}</p>
+        <div class="ranges__track">
+          <span class={`ranges__bar ranges__bar--ach`} style={pos(ach)}><span class="visually-hidden">Achondroplasia: {words(ach)}.</span></span>
+          <span class={`ranges__bar ranges__bar--avg${avg[0] === avg[1] ? " ranges__bar--dot" : ""}`} style={pos(avg)}><span class="visually-hidden">Average stature: {words(avg)}.</span></span>
+        </div>
+      </li>
+    ))}
+  </ul>
+  <div class="ranges__axis" aria-hidden="true">
+    {[0, 6, 12, 18, 24, 30, 36].map((m) => <span style={`left: ${(m / MAX) * 100}%`}>{m}</span>)}
+  </div>
+  <p class="bars__axis-title">Age (months)</p>
+  <ul class="ranges__legend" aria-hidden="true">
+    <li><span class="ranges__bar ranges__bar--ach"></span> Achondroplasia</li>
+    <li><span class="ranges__bar ranges__bar--avg"></span> Average stature</li>
+  </ul>
+</Figure>

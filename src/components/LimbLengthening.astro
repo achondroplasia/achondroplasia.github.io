@@ -1,0 +1,58 @@
+---
+import Figure from "./Figure.astro";
+
+/* Limb lengthening (distraction osteogenesis) in two steps, plus the average
+   gain per bone from the published series quoted on the Treatments page. */
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const GAINS = [
+  { bone: "Thigh (femur)", cm: 8.9 },
+  { bone: "Upper arm (humerus)", cm: 8.4 },
+  { bone: "Shin (tibia)", cm: 7.4 },
+];
+---
+<Figure
+  caption={caption}
+  credit="Original diagram for this guide. Average gains per bone segment from the published series cited on this page. Simplified; the external frame or internal nail that does the pulling is not shown."
+>
+  <ol class="lengthen">
+    <li class="lengthen__step">
+      <svg viewBox="0 0 80 160" aria-hidden="true">
+        <rect class="lengthen__bone" x="28" y="10" width="24" height="140" rx="10" />
+        <path class="lengthen__cut" d="M22,80 l8,-5 l8,5 l8,-5 l8,5 l8,-5" />
+      </svg>
+      <p><strong>1. The bone is cut</strong> (an osteotomy).</p>
+    </li>
+    <li class="lengthen__step">
+      <svg viewBox="0 0 80 160" aria-hidden="true">
+        <rect class="lengthen__bone" x="28" y="4" width="24" height="64" rx="10" />
+        <rect class="lengthen__new" x="30" y="66" width="20" height="28" />
+        <rect class="lengthen__bone" x="28" y="92" width="24" height="64" rx="10" />
+        <path class="lengthen__pull" d="M66,62 V30" marker-end="url(#lengthen-arrow)" />
+        <path class="lengthen__pull" d="M66,98 V130" marker-end="url(#lengthen-arrow)" />
+        <defs>
+          <marker id="lengthen-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" class="lengthen__arrowhead" />
+          </marker>
+        </defs>
+      </svg>
+      <p><strong>2. The ends are pulled apart</strong> about 1 mm a day, and new bone fills the gap.</p>
+    </li>
+    <li class="lengthen__step lengthen__step--gains">
+      <p><strong>3. Average gain per bone</strong></p>
+      <ul class="lengthen__gains">
+        {GAINS.map((g) => (
+          <li>
+            <span>{g.bone}</span>
+            <span class="lengthen__gain-bar" style={`width: ${(g.cm / 10) * 100}%`}></span>
+            <strong>{g.cm} cm</strong>
+          </li>
+        ))}
+      </ul>
+      <p class="lengthen__total">A full program over several years can add 20–30 cm or more of height.</p>
+    </li>
+  </ol>
+</Figure>
