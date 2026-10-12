@@ -10,6 +10,10 @@ const CONCURRENCY = 8;
 const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140 Safari/537.36";
 
+/* Sites that answer a live page with an error status. GARD is a single-page
+   app whose server returns 404 for every disease page, then renders it. */
+const FALSE_ERRORS = [/^https:\/\/rarediseases\.info\.nih\.gov\/diseases\//];
+
 const where = new Map(); // url -> Set(pages)
 for (const file of fs.readdirSync(DIST).filter((f) => f.endsWith(".html"))) {
   const html = fs.readFileSync(path.join(DIST, file), "utf8");
@@ -22,7 +26,11 @@ for (const file of fs.readdirSync(DIST).filter((f) => f.endsWith(".html"))) {
 }
 
 async function check(url) {
-  for (const method of ["HEAD", "GET"]) {
+  if (FALSE_ERRORS.some((re) => re.test(url))) return "blocked";
+  /* GET twice, so one dropped connection from a slow overseas server
+     doesn't count as dead. */
+  let attempt = 0;
+  for (const method of ["HEAD", "GET", "GET"]) {
     try {
       const res = await fetch(url, {
         method,
@@ -31,10 +39,11 @@ async function check(url) {
         headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" },
       });
       if (res.ok) return "ok";
-      if ([403, 429, 401, 999].includes(res.status)) return "blocked";
+      /* 405 on a GET is a bot filter (e.g. thejns.org), not a missing page */
+      if ([403, 405, 429, 401, 999].includes(res.status)) return "blocked";
       if (method === "GET") return String(res.status);
     } catch (e) {
-      if (method === "GET") return e.name === "TimeoutError" ? "timeout" : "unreachable";
+      if (method === "GET" && attempt++) return e.name === "TimeoutError" ? "timeout" : "unreachable";
     }
   }
 }
